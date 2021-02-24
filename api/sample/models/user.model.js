@@ -1,30 +1,93 @@
-
-
 class User {
 
-    getAllUsers(params){
+    constructor(){
+        this.dbUsers = [
+            {
+                user_id: "1",
+                name: "Gökhan",
+                surname: "Bulut",
+                email: "gbulut@hotmail.com",
+                password: "123",
+                phone: "+905055550505",
+            },
+            {
+                user_id: "2",
+                name: "Işıl",
+                surname: "Güneş",
+                email: "igunes@gmail.com",
+                password: "456",
+                phone: "+905435586504",
+            },
+            {
+                user_id: "3",
+                name: "Deniz",
+                surname: "Okyanus",
+                email: "dokyanus@gmail.com",
+                password: "789",
+                phone: "+905068476956",
+            },
+        ]
+        this.safeUsers = JSON.parse(JSON.stringify(this.dbUsers, this.hideFields))
+
+        this.sessionKeys = [
+            {
+                user_id: "1",
+                session_key: "st1"
+            },
+            {
+                user_id: "2",
+                session_key: "st2"
+            },
+            {
+                user_id: "3",
+                session_key: "st3"
+            }
+        ]
+    }
+
+    hideFields(key,value){
+        if (key=="password") return undefined;
+        else if (key=="session_key") return undefined;
+        else return value;
+    }
+
+    login(reqBody, params){
+
+        const user = this.dbUsers.find(x => x.email === reqBody.email);
+
+        // check if login request is valid
+        const isValid = user.password === reqBody.password;
+        
+        let sampleLoginResponse = {}
+
+        if(isValid){
+            const safeUser = this.safeUsers.find(x => x.email === reqBody.email);
+
+            sampleLoginResponse = {
+                status: "SUCCESS",
+                message: "login is successful",
+                user: safeUser,
+                session: this.sessionKeys.find(x => x.user_id === user.user_id)
+            }
+        }
+        else{
+            sampleLoginResponse = {
+                status: "SUCCESS",
+                message: "login has failed"
+            }
+        }
+
+        return sampleLoginResponse;
+    }
+
+    getAllUsers(reqBody, params){
 
         // get users from db
 
-        const sampleUsersResponse = {
+        let sampleUsersResponse = {
             status: "SUCCESS",
             message: "all users are listed",
-            users: [
-                {
-                    user_id: "1",
-                    name: "Ali",
-                    surname: "Yılmaz",
-                    email: "example@gmail.com",
-                    phone: "+905055550505"
-                },
-                {
-                    user_id: "2",
-                    name: "Ayşe",
-                    surname: "Yılmaz",
-                    email: "example@gmail.com",
-                    phone: "+905066660606"
-                }
-            ]
+            users: this.safeUsers
         }
 
         return sampleUsersResponse;
@@ -43,10 +106,9 @@ class User {
                 status: "SUCCESS",
                 message: "new user is added(sample)",
                 user: {
-                    user_id: reqBody.id || Math.floor(Math.random()*100 +1),
+                    user_id: Math.floor(Math.random()*100 +1).toString(),
                     name: reqBody.name,
                     surname: reqBody.surname,
-                    password: reqBody.password,
                     email: reqBody.email,
                     phone: reqBody.phone
                 }
@@ -64,19 +126,26 @@ class User {
         return sampleAddUserResponse;
     }
 
-    deleteUser(params){
+    deleteUser(reqBody, params){
 
+        // SESSION KEY CONTROL
+        const key = reqBody.session_key;
+        
         // check if request is valid
+        const user = this.safeUsers.find(x => x.user_id === params.id);
 
-        let sampleDeleteUserResponse = {
-            status: "SUCCESS",
-            message: "user is deleted",
-            user: {
-                user_id: params.id,
-                name: "Ali",
-                surname: "Yılmaz",
-                email: "example@gmail.com",
-                phone: "+905055550505"
+        let sampleDeleteUserResponse = {}
+        if(user){
+            sampleDeleteUserResponse = {
+                status: "SUCCESS",
+                message: "user is deleted",
+                user: user
+            }
+        }
+        else{
+            sampleDeleteUserResponse = {
+                status: "FAILURE",
+                message: "user is not found"
             }
         }
 
@@ -84,22 +153,28 @@ class User {
     }
 
     updateUser(reqBody, params){
+
+        // SESSION KEY CONTROL
+        const key = reqBody.session_key;
+
+        // check if request is valid
+        const user = this.dbUsers.find(x => x.user_id === params.id);
+
         // check if new user entry is valid
         const fields = Object.keys(reqBody)
-        const fieldCheck = fields.length < 6
+        const fieldCheck = fields.length < 7
 
         let sampleUpdateUserResponse = {}
 
-        if(fieldCheck){
+        if(fieldCheck && user){
             // add user to database
             sampleUpdateUserResponse = {
                 status: "SUCCESS",
                 message: "user is updated(sample)",
                 user: {
-                    user_id: params.id || Math.floor(Math.random()*100 +1),
+                    user_id: params.id,
                     name: reqBody.name,
                     surname: reqBody.surname,
-                    password: reqBody.password,
                     email: reqBody.email,
                     phone: reqBody.phone
                 }
@@ -115,9 +190,6 @@ class User {
 
         return sampleUpdateUserResponse;
     }
-
-
-
 
 }
 

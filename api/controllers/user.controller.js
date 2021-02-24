@@ -8,7 +8,7 @@ const user = new User()
 
 userRouter.get('/', (req, res) => {
     // check if request is valid
-    res.status(200).json(user.getAllUsers(req.params))
+    res.status(200).json(user.getAllUsers(req.body, req.params))
 })
 
 userRouter.post('/', (req, res) => {
@@ -17,11 +17,15 @@ userRouter.post('/', (req, res) => {
 })
 
 userRouter.delete('/:id', (req, res) => {
-    res.status(200).json(user.deleteUser(req.params))
+    res.status(200).json(user.deleteUser(req.body, req.params))
 })
 
 userRouter.patch('/:id', (req, res) => {
     res.status(200).json(user.updateUser(req.body, req.params));
+})
+
+userRouter.post('/login', (req, res) => {
+    res.status(200).json(user.login(req.body, req.params));
 })
 
 module.exports = userRouter;
