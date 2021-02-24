@@ -2,6 +2,8 @@
 
 ## Dependencies
 
+Use `npm install` to install dependencies.
+
 - Express JS: version ^4.17.1
 - Nodemon: version ^2.0.7 (for development purposes)
 
