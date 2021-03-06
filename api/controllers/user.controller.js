@@ -11,6 +11,11 @@ userRouter.get('/', (req, res) => {
     res.status(200).json(user.getAllUsers(req.body, req.params))
 })
 
+userRouter.get('/:id', (req, res) => {
+    // check if request is valid
+    res.status(200).json(user.getUser(req.body, req.params))
+})
+
 userRouter.post('/', (req, res) => {
     // check if request is valid
     res.status(200).json(user.addUser(req.body, req.params));

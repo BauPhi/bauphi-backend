@@ -93,6 +93,31 @@ class User {
         return sampleUsersResponse;
     }
 
+    getUser(reqBody, params){
+        // SESSION KEY CONTROL
+        const key = reqBody.session_key;
+        
+        // check if request is valid
+        const user = this.safeUsers.find(x => x.user_id === params.id);
+
+        let sampleGetUserResponse = {}
+        if(user){
+            sampleGetUserResponse = {
+                status: "SUCCESS",
+                message: "user is found",
+                user: user
+            }
+        }
+        else{
+            sampleGetUserResponse = {
+                status: "FAILURE",
+                message: "user is not found"
+            }
+        }
+
+        return sampleGetUserResponse;
+    }
+
     addUser(reqBody, params){
 
         // check if new user entry is valid
