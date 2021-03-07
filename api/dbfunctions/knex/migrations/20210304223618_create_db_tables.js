@@ -67,7 +67,6 @@ exports.up = function(knex) {
     table.string('neighbourhood')
     table.float('latitude')
     table.float('longitude')
-    table.inherits('donation')
     table.inherits('events')
 })
 
