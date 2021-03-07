@@ -5,9 +5,9 @@ class Home {
                 home_id: "1",
                 home_owner: "1",
                 country: "Turkey",
-                area: "Marmara Bölgesi",
-                city: "İstanbul",
-                neighbourhood: "Zekeriyaköy Mah. X Cad. Y Sok. No: 1/2 Sarıyer",
+                state: "İstanbul",
+                city: "Sarıyer",
+                neighbourhood: "Zekeriyaköy Mah. X Cad. Y Sok. No: 1/2",
                 latitude: "41.201170",
                 longitude: "29.032128"
             },
@@ -15,9 +15,9 @@ class Home {
                 home_id: "2",
                 home_owner: "2",
                 country: "Turkey",
-                area: "Karadeniz Bölgesi",
-                city: "Kastamonu",
-                neighbourhood: "Aktekke Mah. X Cad. Y Sok. No: 1/2 Merkez",
+                state: "Kastamonu",
+                city: "Merkez",
+                neighbourhood: "Aktekke Mah. X Cad. Y Sok. No: 1/2",
                 latitude: "41.381227",
                 longitude: "33.782458"
             },
@@ -25,9 +25,9 @@ class Home {
                 home_id: "3",
                 home_owner: "1",
                 country: "Turkey",
-                area: "Marmara Bölgesi",
-                city: "İstanbul",
-                neighbourhood: "İncirköy Mah. X Cad. Y Sok. No: 1/2 Beykoz",
+                state: "İstanbul",
+                city: "Beykoz",
+                neighbourhood: "İncirköy Mah. X Cad. Y Sok. No: 1/2",
                 latitude: "41.121082",
                 longitude: "29.122104"
             },
@@ -35,7 +35,7 @@ class Home {
                 home_id: "4",
                 home_owner: "3",
                 country: "Turkey",
-                area: "Akdeniz Bölgesi",
+                state: "Akdeniz Bölgesi",
                 city: "Mersin",
                 neighbourhood: "Selçuklar Mah. X Cad. Y Sok. No: 1/2 Toroslar",
                 latitude: "36.821536",
@@ -107,7 +107,7 @@ class Home {
 
         //check fields
         const fields = Object.keys(reqBody)
-        const fieldCheck = fields.includes("session_key" && "home_owner" && "home_name" && "country" && "area" && "city" && "neighbourhood" && "latitude" && "longitude") && fields.length < 10
+        const fieldCheck = fields.includes("session_key" && "home_owner" && "home_name" && "country" && "state" && "city" && "neighbourhood" && "latitude" && "longitude") && fields.length < 10
 
         let sampleAddHomeResponse = {}
         if(fieldCheck){
@@ -120,7 +120,7 @@ class Home {
                     home_owner: reqBody.home_owner,
                     home_name: reqBody.home_name,
                     country: reqBody.country,
-                    area: reqBody.area,
+                    state: reqBody.state,
                     city: reqBody.city,
                     neighbourhood: reqBody.neighbourhood,
                     latitude: reqBody.latitude,
@@ -196,7 +196,7 @@ class Home {
                     home_owner: reqBody.home_owner,
                     home_name: reqBody.home_name,
                     country: reqBody.country,
-                    area: reqBody.area,
+                    state: reqBody.state,
                     city: reqBody.city,
                     neighbourhood: reqBody.neighbourhood,
                     latitude: reqBody.latitude,
