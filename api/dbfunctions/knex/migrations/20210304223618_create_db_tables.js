@@ -87,15 +87,14 @@ exports.up = function(knex) {
 }
 
 exports.down = function(knex) {
-    return knex.schema.dropTable('users')
-    .dropTable('supply')
-    .dropTable('users')
-    .dropTable('home')
-    .dropTable('announcement')
-    .dropTable('money')
-    .dropTable('events')
+    return knex.schema.dropTable('supply')
     .dropTable('meeting')
+    .dropTable('money')
     .dropTable('donations')
+    .dropTable('announcement')
     .dropTable('request')
+    .dropTable('home')
     .dropTable('attend')
+    .dropTable('events')
+    .dropTable('users')
 };
