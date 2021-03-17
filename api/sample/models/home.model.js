@@ -215,6 +215,76 @@ class Home {
 
     }
 
+    async autoLocation(reqBody, params, user_id){
+
+        const fetch = require("node-fetch")
+
+        // SESSION KEY CONTROL
+        const key = reqBody.session_key;
+
+        //check fields
+        const fields = Object.keys(reqBody)
+        const fieldCheck = fields.includes("session_key" && "latitude" && "longitude") && fields.length < 4
+
+        let apiResponse = {}
+        await fetch('https://nominatim.openstreetmap.org/reverse?lat=' + reqBody.latitude + '&lon=' + reqBody.longitude + '&format=json')
+        .then(res => res.json())
+        .then(json => {
+            const apiFields = Object.keys(json)
+            const apiFieldCheck = apiFields.includes("address")
+            if(apiFieldCheck){
+                const addressFields = Object.keys(json.address)
+                const addressFieldCheck = addressFields.includes("country" && "province" && "county")
+                if(addressFieldCheck){
+                    apiResponse = {
+                        tempHomeName: json.address.county + "/" + json.address.province,
+                        country: json.address.country,
+                        state: json.address.province,
+                        city: json.address.county,
+                        neighbourhood: json.address.suburb || json.address.village
+                    }
+                }
+                else{
+                    apiResponse = {
+                        apiStatus: "FAILURE",
+                        apiMessage: "no detailed address, enter manually"
+                    }
+                }
+            }
+            else{
+                apiResponse = {
+                    apiStatus: "FAILURE",
+                    apiMessage: "no address data, enter manually"
+                }
+            }
+            
+        })
+        .catch((error) => {
+            apiResponse = {
+                apiStatus: "FAILURE",
+                apiMessage: error.message
+            }
+        });
+
+
+        let sampleAutoDefineResponse = {}
+        if(fieldCheck){
+            sampleAutoDefineResponse = {
+                status: "SUCCESS",
+                message: "location api response is returned",
+                apiResponse: apiResponse
+            }
+        }
+        else{
+            sampleAutoDefineResponse = {
+                status: "FAILURE",
+                message: "request body fields are not true"
+            }
+        }
+
+        return sampleAutoDefineResponse;
+    }
+
 }
 
 module.exports = Home;

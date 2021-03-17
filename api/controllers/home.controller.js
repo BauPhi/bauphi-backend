@@ -12,6 +12,12 @@ homeRouter.get('/', (req, res) => {
     res.status(200).json(home.getHomes(req.body, req.params, user_id))
 })
 
+homeRouter.post('/autoLocation', async (req, res) => {
+    const url = req.baseUrl.substring();
+    const user_id = url.substring(11, url.lastIndexOf('homes')-1)
+    res.status(200).json(await home.autoLocation(req.body, req.params, user_id))
+})
+
 homeRouter.get('/:id', (req, res) => {
     const url = req.baseUrl.substring();
     const user_id = url.substring(11, url.lastIndexOf('homes')-1)
