@@ -237,7 +237,9 @@ class Home {
                 const addressFieldCheck = addressFields.includes("country" && "province" && "county")
                 if(addressFieldCheck){
                     apiResponse = {
-                        tempHomeName: json.address.county + "/" + json.address.province,
+                        api_status: "SUCCESS",
+                        api_message: "address is returned",
+                        home_name: json.address.county + "/" + json.address.province,
                         country: json.address.country,
                         state: json.address.province,
                         city: json.address.county,
@@ -246,23 +248,23 @@ class Home {
                 }
                 else{
                     apiResponse = {
-                        apiStatus: "FAILURE",
-                        apiMessage: "no detailed address, enter manually"
+                        api_status: "FAILURE",
+                        api_message: "no detailed address, enter manually"
                     }
                 }
             }
             else{
                 apiResponse = {
-                    apiStatus: "FAILURE",
-                    apiMessage: "no address data, enter manually"
+                    api_status: "FAILURE",
+                    api_message: "no address data, enter manually"
                 }
             }
             
         })
         .catch((error) => {
             apiResponse = {
-                apiStatus: "FAILURE",
-                apiMessage: error.message
+                api_status: "FAILURE",
+                api_message: error.message
             }
         });
 
@@ -272,7 +274,7 @@ class Home {
             sampleAutoDefineResponse = {
                 status: "SUCCESS",
                 message: "location api response is returned",
-                apiResponse: apiResponse
+                api_response: apiResponse
             }
         }
         else{
