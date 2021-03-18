@@ -41,8 +41,6 @@ class Announcement {
     }
 
     getAnnouncements(reqBody, params, user_id){
-        // SESSION KEY CONTROL
-        const key = reqBody.session_key;
 
         // get announcements of user
         const announcements = this.dbAnnouncements.filter(x => x.ann_starter === user_id);
@@ -67,8 +65,6 @@ class Announcement {
     }
 
     getAnnouncement(reqBody, params, user_id){
-        // SESSION KEY CONTROL
-        const key = reqBody.session_key;
 
         // get announcements of user
         const announcement = this.dbAnnouncements.find(x => {
@@ -97,12 +93,10 @@ class Announcement {
     }
 
     addAnnouncement(reqBody, params, user_id){
-        // SESSION KEY CONTROL
-        const key = reqBody.session_key;
 
         //check fields
         const fields = Object.keys(reqBody)
-        const fieldCheck = fields.includes("session_key" && "image" && "phone" && "title" && "description" && "isHuman") && fields.length < 7
+        const fieldCheck = fields.includes("image" && "phone" && "title" && "description" && "isHuman") && fields.length < 6
 
         let sampleAddAnnouncementResponse = {}
         if(fieldCheck){
@@ -133,8 +127,6 @@ class Announcement {
     }
 
     deleteAnnouncement(reqBody, params, user_id){
-        // SESSION KEY CONTROL
-        const key = reqBody.session_key;
 
         // get announcements of user
         const announcement = this.dbAnnouncements.find(x => {
@@ -164,12 +156,10 @@ class Announcement {
     }
 
     updateAnnouncement(reqBody, params, user_id){
-        // SESSION KEY CONTROL
-        const key = reqBody.session_key;
 
         //check fields
         const fields = Object.keys(reqBody)
-        const fieldCheck = fields.length < 7
+        const fieldCheck = fields.length < 6
 
         // check db
         const announcement = this.dbAnnouncements.find(x => {

@@ -71,8 +71,6 @@ class Event {
     }
 
     getEvents(reqBody, params, user_id){
-        // SESSION KEY CONTROL
-        const key = reqBody.session_key;
 
         // get events of user
         const events = this.dbEvents.filter(x => x.event_starter === user_id);
@@ -98,8 +96,6 @@ class Event {
 
 
     getEvent(reqBody, params, user_id){
-        // SESSION KEY CONTROL
-        const key = reqBody.session_key;
 
         // get events of user
         const event = this.dbEvents.find(x => {
@@ -129,12 +125,10 @@ class Event {
 
 
     addEvent(reqBody, params, user_id){
-        // SESSION KEY CONTROL
-        const key = reqBody.session_key;
 
         //check fields
         const fields = Object.keys(reqBody)
-        const fieldCheck = fields.includes("session_key" && "event_start" && "event_end" && "title" && "description" && "type") && fields.length < 7
+        const fieldCheck = fields.includes("event_start" && "event_end" && "title" && "description" && "type") && fields.length < 6
 
         let sampleAddEventResponse = {}
         if(fieldCheck){
@@ -167,8 +161,6 @@ class Event {
 
 
     deleteEvent(reqBody, params, user_id){
-        // SESSION KEY CONTROL
-        const key = reqBody.session_key;
 
         // get events of user
         const event = this.dbEvents.find(x => {
@@ -200,12 +192,10 @@ class Event {
 
 
     updateEvent(reqBody, params, user_id){
-        // SESSION KEY CONTROL
-        const key = reqBody.session_key;
 
         //check fields
         const fields = Object.keys(reqBody)
-        const fieldCheck = fields.length < 14
+        const fieldCheck = fields.length < 13
 
         let sampleUpdateEventResponse = {}
         if(fieldCheck){

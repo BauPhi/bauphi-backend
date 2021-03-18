@@ -45,8 +45,6 @@ class Home {
     }
 
     getHomes(reqBody, params, user_id){
-        // SESSION KEY CONTROL
-        const key = reqBody.session_key;
 
         // get homes of user
         const homes = this.dbHomes.filter(x => x.home_owner === user_id);
@@ -71,8 +69,6 @@ class Home {
     }
 
     getHome(reqBody, params, user_id){
-        // SESSION KEY CONTROL
-        const key = reqBody.session_key;
 
         // get homes of user
         const home = this.dbHomes.find(x => {
@@ -102,12 +98,10 @@ class Home {
 
 
     addHome(reqBody, params, user_id){
-        // SESSION KEY CONTROL
-        const key = reqBody.session_key;
 
         //check fields
         const fields = Object.keys(reqBody)
-        const fieldCheck = fields.includes("session_key" && "home_owner" && "home_name" && "country" && "state" && "city" && "neighbourhood" && "latitude" && "longitude") && fields.length < 10
+        const fieldCheck = fields.includes("home_owner" && "home_name" && "country" && "state" && "city" && "neighbourhood" && "latitude" && "longitude") && fields.length < 9
 
         let sampleAddHomeResponse = {}
         if(fieldCheck){
@@ -140,8 +134,6 @@ class Home {
     }
 
     deleteHome(reqBody, params, user_id){
-        // SESSION KEY CONTROL
-        const key = reqBody.session_key;
 
         // get homes of user
         const home = this.dbHomes.find(x => {
@@ -171,8 +163,6 @@ class Home {
     }
     
     updateHome(reqBody, params, user_id){
-        // SESSION KEY CONTROL
-        const key = reqBody.session_key;
 
         // check fields
         const fields = Object.keys(reqBody)
@@ -219,12 +209,9 @@ class Home {
 
         const fetch = require("node-fetch")
 
-        // SESSION KEY CONTROL
-        const key = reqBody.session_key;
-
         //check fields
         const fields = Object.keys(reqBody)
-        const fieldCheck = fields.includes("session_key" && "latitude" && "longitude") && fields.length < 4
+        const fieldCheck = fields.includes("latitude" && "longitude") && fields.length < 3
 
         let apiResponse = {}
         await fetch('https://nominatim.openstreetmap.org/reverse?lat=' + reqBody.latitude + '&lon=' + reqBody.longitude + '&format=json')
