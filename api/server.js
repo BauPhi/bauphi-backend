@@ -14,8 +14,8 @@ server.get('/', (req, res) => {
 
 server.use('/api/users', userRouter)
 server.use('/api/users/:userid/homes', homeRouter)
-server.use('/api/events', eventRouter)
-server.use('/api/announcements', announcementRouter)
+server.use('/api/users/:userid/events', eventRouter)
+server.use('/api/users/:userid/announcements', announcementRouter)
 
 
 module.exports = server;

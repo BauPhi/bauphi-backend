@@ -9,7 +9,8 @@ Use `npm install` to install dependencies.
 - Knex: version ^0.95.1
 - pg: ^8.5.1
 - postgres: ^1.0.2
-    
+- Node-Fetch: ^2.6.1
+
 
 ## Setup
 

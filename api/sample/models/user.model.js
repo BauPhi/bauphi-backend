@@ -29,25 +29,10 @@ class User {
         ]
         this.safeUsers = JSON.parse(JSON.stringify(this.dbUsers, this.hideFields))
 
-        this.sessionKeys = [
-            {
-                user_id: "1",
-                session_key: "st1"
-            },
-            {
-                user_id: "2",
-                session_key: "st2"
-            },
-            {
-                user_id: "3",
-                session_key: "st3"
-            }
-        ]
     }
 
     hideFields(key,value){
         if (key=="password") return undefined;
-        else if (key=="session_key") return undefined;
         else return value;
     }
 
@@ -63,11 +48,18 @@ class User {
         if(isValid){
             const safeUser = this.safeUsers.find(x => x.email === reqBody.email);
 
+            var start_time = new Date(new Date().getTime())
+            var expire_time = new Date(new Date().getTime() + (12*60*60*1000))
+
             sampleLoginResponse = {
                 status: "SUCCESS",
                 message: "login is successful",
                 user: safeUser,
-                session: this.sessionKeys.find(x => x.user_id === user.user_id)
+                session: {
+                    start_time: start_time.toString(),
+                    expire_time: expire_time.toString(),
+                    session_key: "admin"
+                }
             }
         }
         else{
@@ -91,6 +83,29 @@ class User {
         }
 
         return sampleUsersResponse;
+    }
+
+    getUser(reqBody, params){
+        
+        // check if request is valid
+        const user = this.safeUsers.find(x => x.user_id === params.id);
+
+        let sampleGetUserResponse = {}
+        if(user){
+            sampleGetUserResponse = {
+                status: "SUCCESS",
+                message: "user is found",
+                user: user
+            }
+        }
+        else{
+            sampleGetUserResponse = {
+                status: "FAILURE",
+                message: "user is not found"
+            }
+        }
+
+        return sampleGetUserResponse;
     }
 
     addUser(reqBody, params){
@@ -127,9 +142,6 @@ class User {
     }
 
     deleteUser(reqBody, params){
-
-        // SESSION KEY CONTROL
-        const key = reqBody.session_key;
         
         // check if request is valid
         const user = this.safeUsers.find(x => x.user_id === params.id);
@@ -154,15 +166,12 @@ class User {
 
     updateUser(reqBody, params){
 
-        // SESSION KEY CONTROL
-        const key = reqBody.session_key;
-
         // check if request is valid
         const user = this.dbUsers.find(x => x.user_id === params.id);
 
         // check if new user entry is valid
         const fields = Object.keys(reqBody)
-        const fieldCheck = fields.length < 7
+        const fieldCheck = fields.length < 6
 
         let sampleUpdateUserResponse = {}
 
