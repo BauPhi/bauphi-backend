@@ -1,3 +1,4 @@
+const db = require('../dbfunctions/dbControls');
 class User {
 
     constructor(){
@@ -38,16 +39,17 @@ class User {
 
     login(reqBody, params){
 
-        const user = this.dbUsers.find(x => x.email === reqBody.email);
+        //const user = this.dbUsers.find(x => x.email === reqBody.email);
 
+        const user = db.knex('user').select({'email':reqBody.email})
         // check if login request is valid
         const isValid = user.password === reqBody.password;
         
         let sampleLoginResponse = {}
 
         if(isValid){
-            const safeUser = this.safeUsers.find(x => x.email === reqBody.email);
-
+            //const safeUser = this.safeUsers.find(x => x.email === reqBody.email);
+            const safeUser = user
             var start_time = new Date(new Date().getTime())
             var expire_time = new Date(new Date().getTime() + (12*60*60*1000))
 
@@ -74,12 +76,11 @@ class User {
 
     getAllUsers(reqBody, params){
 
-        // get users from db
-
+        const users = knex('user').select()
         let sampleUsersResponse = {
             status: "SUCCESS",
             message: "all users are listed",
-            users: this.safeUsers
+            users: users
         }
 
         return sampleUsersResponse;
@@ -88,7 +89,8 @@ class User {
     getUser(reqBody, params){
         
         // check if request is valid
-        const user = this.safeUsers.find(x => x.user_id === params.id);
+        const user = db.knex('user').select({'user_id':params.id})
+        //const user = this.safeUsers.find(x => x.user_id === params.id);
 
         let sampleGetUserResponse = {}
         if(user){
@@ -116,7 +118,7 @@ class User {
 
         let sampleAddUserResponse = "";
         if(fieldCheck){
-            // add user to database
+        db.knex('user').insert(reqBody)
             sampleAddUserResponse = {
                 status: "SUCCESS",
                 message: "new user is added(sample)",
@@ -144,9 +146,10 @@ class User {
     deleteUser(reqBody, params){
         
         // check if request is valid
-        const user = this.safeUsers.find(x => x.user_id === params.id);
+        //const user = this.safeUsers.find(x => x.user_id === params.id);
 
         let sampleDeleteUserResponse = {}
+        db.knex('user').where('user_id', params.id).delete()
         if(user){
             sampleDeleteUserResponse = {
                 status: "SUCCESS",
@@ -167,7 +170,7 @@ class User {
     updateUser(reqBody, params){
 
         // check if request is valid
-        const user = this.dbUsers.find(x => x.user_id === params.id);
+        //const user = this.dbUsers.find(x => x.user_id === params.id);
 
         // check if new user entry is valid
         const fields = Object.keys(reqBody)
@@ -175,8 +178,9 @@ class User {
 
         let sampleUpdateUserResponse = {}
 
+
         if(fieldCheck && user){
-            // add user to database
+            db.knex('user').where('user_id', params.id).update(reqBody)
             sampleUpdateUserResponse = {
                 status: "SUCCESS",
                 message: "user is updated(sample)",

@@ -1,3 +1,4 @@
+const db = require('../dbfunctions/dbControls');
 class Event {
     constructor(){
         this.dbEvents = [
@@ -72,8 +73,8 @@ class Event {
 
     getEvents(reqBody, params, user_id){
 
-        // get events of user
-        const events = this.dbEvents.filter(x => x.event_starter === user_id);
+        const events = db.knex('events').where('event_starter', user_id).select()
+        //const events = this.dbEvents.filter(x => x.event_starter === user_id);
        
         let sampleGetEventsResponse = {}
         if(events && events.length !== 0){
@@ -98,11 +99,13 @@ class Event {
     getEvent(reqBody, params, user_id){
 
         // get events of user
-        const event = this.dbEvents.find(x => {
+        /*const event = this.dbEvents.find(x => {
             if(x.event_id === params.id && x.event_starter === user_id){
                 return true;
             }
-        });
+        });*/
+
+        const event = db.knex('events').where({'event_starter': user_id, 'event_id': params.id}).select()
        
         let sampleGetEventResponse = {}
         if(event){
@@ -132,6 +135,8 @@ class Event {
 
         let sampleAddEventResponse = {}
         if(fieldCheck){
+            const temp = {...JSON.parse(user_id), ...JSON.parse(reqBody)}
+            db.knex('events').insert(temp)
             sampleAddEventResponse = {
                 status: "SUCCESS",
                 message: "new event is added",
@@ -163,14 +168,15 @@ class Event {
     deleteEvent(reqBody, params, user_id){
 
         // get events of user
-        const event = this.dbEvents.find(x => {
+        /*const event = this.dbEvents.find(x => {
             if(x.event_id === params.id && x.event_starter === user_id){
                 return true;
             }
-        });
+        });*/
 
+        const event = db.knex('events').where({'event_starter': user_id, 'event_id':params.id}).delete()
         let sampleDeleteEventResponse = {}
-        if(event){
+        if(event > 0){
             sampleDeleteEventResponse = {
                 status: "SUCCESS",
                 message: "event is deleted",
@@ -199,6 +205,7 @@ class Event {
 
         let sampleUpdateEventResponse = {}
         if(fieldCheck){
+            db.knex('events').where({'event_starter': user_id, 'event_id':params.id}).update(reqBody)
             sampleUpdateEventResponse = {
                 status: "SUCCESS",
                 message: "event is updated",

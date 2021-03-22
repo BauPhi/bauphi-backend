@@ -1,3 +1,4 @@
+const db = require('../dbfunctions/dbControls');
 class Home {
     constructor(){
         this.dbHomes = [
@@ -47,7 +48,7 @@ class Home {
     getHomes(reqBody, params, user_id){
 
         // get homes of user
-        const homes = this.dbHomes.filter(x => x.home_owner === user_id);
+        const homes = knex('home').select().where('home_owner', user_id)
        
         let sampleGetHomesResponse = {}
         if(homes && homes.length !== 0){
@@ -71,11 +72,12 @@ class Home {
     getHome(reqBody, params, user_id){
 
         // get homes of user
-        const home = this.dbHomes.find(x => {
+        const homes = knex('home').select().where({'home_owner': user_id, 'home_id' : params.home_id})
+        /*const home = this.dbHomes.find(x => {
             if(x.home_id === params.id && x.home_owner === user_id){
                 return true;
             }
-        });
+        });*/
        
         let sampleGetHomeResponse = {}
         if(home){
@@ -105,12 +107,14 @@ class Home {
 
         let sampleAddHomeResponse = {}
         if(fieldCheck){
+            const temp = {...JSON.parse({'home_owner': user_id}), ...JSON.parse(reqBody)}
+            knex('home').insert(temp)
             sampleAddHomeResponse = {
                 status: "SUCCESS",
                 message: "new home is added",
                 user_id: user_id,
                 home: {
-                    home_id: Math.floor(Math.random()*100 +1).toString(),
+                    //home_id: Math.floor(Math.random()*100 +1).toString(), auto increment, not needed
                     home_owner: reqBody.home_owner,
                     home_name: reqBody.home_name,
                     country: reqBody.country,
@@ -141,6 +145,7 @@ class Home {
                 return true;
             }
         });
+        knex('home').where({'home_owner': user_id, 'home_id':params.id}).delete()
 
         let sampleDeleteHomeResponse = {}
         if(home){
@@ -169,11 +174,13 @@ class Home {
         const fieldCheck = fields.length < 9
 
         // check db
-        const home = this.dbHomes.find(x => {
+        /*const home = this.dbHomes.find(x => {
             if(x.home_id === params.id && x.home_owner === user_id){
                 return true;
             }
-        });
+        });*/
+
+        knex('home').where({'home_owner': user_id,'home_id': params.id}).update(reqBody)
 
         let sampleUpdateHomeResponse = {}
         if(fieldCheck && home){
