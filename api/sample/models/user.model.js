@@ -41,7 +41,7 @@ class User {
 
         //const user = this.dbUsers.find(x => x.email === reqBody.email);
 
-        const user = db.knex('user').select({'email':reqBody.email})
+        const user = db.knex('users').select({'email':reqBody.email})
         // check if login request is valid
         const isValid = user.password === reqBody.password;
         
@@ -76,7 +76,7 @@ class User {
 
     getAllUsers(reqBody, params){
 
-        const users = knex('user').select()
+        const users = knex('users').select()
         let sampleUsersResponse = {
             status: "SUCCESS",
             message: "all users are listed",
@@ -89,7 +89,7 @@ class User {
     getUser(reqBody, params){
         
         // check if request is valid
-        const user = db.knex('user').select({'user_id':params.id})
+        const user = db.knex('users').select({'user_id':params.id})
         //const user = this.safeUsers.find(x => x.user_id === params.id);
 
         let sampleGetUserResponse = {}
@@ -118,7 +118,7 @@ class User {
 
         let sampleAddUserResponse = "";
         if(fieldCheck){
-        db.knex('user').insert(reqBody)
+        db.knex('users').insert(reqBody)
             sampleAddUserResponse = {
                 status: "SUCCESS",
                 message: "new user is added(sample)",
@@ -149,7 +149,7 @@ class User {
         //const user = this.safeUsers.find(x => x.user_id === params.id);
 
         let sampleDeleteUserResponse = {}
-        db.knex('user').where('user_id', params.id).delete()
+        db.knex('users').where('user_id', params.id).delete()
         if(user){
             sampleDeleteUserResponse = {
                 status: "SUCCESS",
@@ -180,7 +180,7 @@ class User {
 
 
         if(fieldCheck && user){
-            db.knex('user').where('user_id', params.id).update(reqBody)
+            db.knex('users').where('user_id', params.id).update(reqBody)
             sampleUpdateUserResponse = {
                 status: "SUCCESS",
                 message: "user is updated(sample)",
