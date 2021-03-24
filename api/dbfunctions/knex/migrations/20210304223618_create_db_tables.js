@@ -14,6 +14,7 @@ exports.up = function(knex) {
     table.increments('home_id').primary()
     table.integer('home_owner').references('user_id').inTable('users').onUpdate('CASCADE').onDelete('CASCADE')
     table.string('home_name')
+    table.boolean('isVisible')
     table.string('country')
     table.string('state')
     table.string('city')
@@ -48,6 +49,7 @@ exports.up = function(knex) {
 .createTableIfNotExists('announcement', table => {
     table.increments('announcement_id').primary()
     table.integer('ann_starter').references('user_id').inTable('users').onUpdate('CASCADE').onDelete('CASCADE')
+    table.boolean('isHuman')
     table.binary('image', [2048])
     table.string('phone')
     table.string('title')

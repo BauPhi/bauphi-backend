@@ -35,6 +35,7 @@ const pg = require('knex')({
   .createTable('home', table => {
       table.increments('home_id').primary()
       table.integer('home_owner').references('userid').inTable('users')
+      table.boolean('isVisible')
       table.string('home_name')
       table.string('country')
       table.string('state')
@@ -70,6 +71,7 @@ const pg = require('knex')({
   .createTable('announcement', table => {
       table.increments('announcement_id').primary()
       table.integer('ann_starter').references('userid').inTable('users')
+      table.boolean('isHuman')
       table.binary('image', [2048])
       table.string('phone')
       table.string('title')
