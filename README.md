@@ -13,7 +13,7 @@ Use `npm install` to install dependencies.
 
 
 ## Setup
-
+Go to /bauphi-backend/api/dbfunctions and init postgres database via `npx knex migrate:latest`
 Use `npm start` or `yarn server` to start the server in http://localhost:5000/.
 
 ## Endpoints
