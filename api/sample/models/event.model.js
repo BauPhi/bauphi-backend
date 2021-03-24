@@ -1,4 +1,4 @@
-const db = require('../dbfunctions/dbControls');
+const knex = require('../dbfunctions/dbControls');
 class Event {
     constructor(){
         this.dbEvents = [
