@@ -1,65 +1,64 @@
 
 exports.up = function(knex) {
-  return knex.schema.createTable('users', table => {
-    table.increments('userid').primary()
-    table.boolean('is_guest').notNullable()
-    table.string('firstname').notNullable()
+  return knex.schema.createTableIfNotExists('users', table => {
+    table.increments('user_id').primary()
+    //table.boolean('is_guest').notNullable()
+    table.string('name').notNullable()
     table.string('surname').notNullable()
     table.string('email')
     table.string('phone')
 })
 
 
-.createTable('home', table => {
+.createTableIfNotExists('home', table => {
     table.increments('home_id').primary()
-    table.integer('home_owner').references('userid').inTable('users')
+    table.integer('home_owner').references('user_id').inTable('users').onUpdate('CASCADE').onDelete('CASCADE')
     table.string('home_name')
     table.string('country')
-    table.string('area')
+    table.string('state')
     table.string('city')
     table.string('neighbourhood')
     table.float('latitude')
     table.float('longitude')
 })
 
-.createTable('request', table => {
-    table.integer('claimer').references('userid').inTable('users')
+.createTableIfNotExists('request', table => {
+    table.integer('claimer').references('user_id').inTable('users')
     table.integer('house').references('home_id').inTable('home')
     table.string('description')
     table.string('results')
     table.primary(['claimer', 'house'])
 })
 
-.createTable('events', table => {
+.createTableIfNotExists('events', table => {
     table.increments('event_id').primary()
-    table.integer('event_starter').references('userid').inTable('users')
+    table.integer('event_starter').references('user_id').inTable('users').onUpdate('CASCADE').onDelete('CASCADE')
     table.date('event_start')
     table.date('event_end')
     table.string('title')
     table.string('description')
 })
 
-.createTable('attend', table => {
-    table.integer('attendee').references('userid').inTable('users')
-    table.integer('the_event').references('event_id').inTable('events')
+.createTableIfNotExists('attend', table => {
+    table.integer('attendee').references('user_id').inTable('users').onUpdate('CASCADE').onDelete('CASCADE')
+    table.integer('the_event').references('event_id').inTable('events').onUpdate('CASCADE').onDelete('CASCADE')
     table.primary(['attendee', 'the_event'])
 })
 
-.createTable('announcement', table => {
+.createTableIfNotExists('announcement', table => {
     table.increments('announcement_id').primary()
-    table.integer('event_starter').references('userid').inTable('users')
+    table.integer('ann_starter').references('user_id').inTable('users').onUpdate('CASCADE').onDelete('CASCADE')
     table.binary('image', [2048])
     table.string('phone')
     table.string('title')
     table.string('description')
+})
+
+.createTableIfNotExists('donations', table => {
     table.inherits('events')
 })
 
-.createTable('donations', table => {
-    table.inherits('events')
-})
-
-.createTable('meeting', table => {
+.createTableIfNotExists('meeting', table => {
     table.boolean('is_emergency')
     table.string('country')
     table.string('area')
@@ -70,12 +69,12 @@ exports.up = function(knex) {
     table.inherits('events')
 })
 
-.createTable('money', table => {
+.createTableIfNotExists('money', table => {
     table.string('currency')
     table.integer('amount')
     table.inherits('donations')
 })
-.createTable('supply', table => {
+.createTableIfNotExists('supply', table => {
     table.string('country')
     table.string('area')
     table.string('city')

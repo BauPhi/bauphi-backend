@@ -7,37 +7,37 @@ const user = new User()
 const Session = require('./session.controller')
 const session = new Session()
 
-userRouter.get('/', (req, res) => {
-    res.status(200).json(user.getAllUsers(req.body, req.params))
+userRouter.get('/', async (req, res) => {
+    res.status(200).json(await user.getAllUsers(req.body, req.params))
 })
 
-userRouter.get('/:id', (req, res) => {
-    res.status(200).json(user.getUser(req.body, req.params))
+userRouter.get('/:id', async (req, res) => {
+    res.status(200).json(await user.getUser(req.body, req.params))
 })
 
-userRouter.post('/', (req, res) => {
-    res.status(200).json(user.addUser(req.body, req.params));
+userRouter.post('/', async (req, res) => {
+    res.status(200).json(await user.addUser(req.body, req.params));
 })
 
-userRouter.delete('/:id', (req, res) => {
+userRouter.delete('/:id', async (req, res) => {
     var sk = req.get("session_key")
     if(session.check(sk, req.params.id)) 
-        res.status(200).json(user.deleteUser(req.body, req.params))
+        res.status(200).json(await user.deleteUser(req.body, req.params))
     else 
         res.status(200).json(session.sendErrorMessage())
     
 })
 
-userRouter.patch('/:id', (req, res) => {
+userRouter.patch('/:id', async (req, res) => {
     var sk = req.get("session_key")
     if(session.check(sk, req.params.id)) 
-        res.status(200).json(user.deleteUser(req.body, req.params))
+        res.status(200).json(await user.updateUser(req.body, req.params))
     else 
         res.status(200).json(session.sendErrorMessage())
 })
 
-userRouter.post('/login', (req, res) => {
-    res.status(200).json(user.login(req.body, req.params));
+userRouter.post('/login', async (req, res) => {
+    res.status(200).json(await user.login(req.body, req.params));
 })
 
 module.exports = userRouter;

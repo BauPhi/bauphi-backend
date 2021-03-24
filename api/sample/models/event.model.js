@@ -1,3 +1,4 @@
+const db = require('../dbfunctions/dbControls');
 class Event {
     constructor(){
         this.dbEvents = [
@@ -70,61 +71,56 @@ class Event {
         ]
     }
 
-    getEvents(reqBody, params, user_id){
+    async getEvents(reqBody, params, user_id){
 
-        // get events of user
-        const events = this.dbEvents.filter(x => x.event_starter === user_id);
-       
-        let sampleGetEventsResponse = {}
-        if(events && events.length !== 0){
-            sampleGetEventsResponse = {
-                status: "SUCCESS",
-                message: "all events of user are listed",
-                user_id: user_id,
-                events: events,
+        return knex('events').where('event_starter', user_id).select()
+        .then(function(events) {
+            let sampleGetEventsResponse = {}
+            if(events && events.length !== 0){
+                sampleGetEventsResponse = {
+                    status: "SUCCESS",
+                    message: "all events of user are listed",
+                    user_id: user_id,
+                    events: events,
+                }
             }
-        }
-        else{
-            sampleGetEventsResponse = {
-                status: "FAILURE",
-                message: "events are not found",
+            else{
+                sampleGetEventsResponse = {
+                    status: "FAILURE",
+                    message: "events are not found",
+                }
             }
-        }
-
-        return sampleGetEventsResponse
+    
+            return sampleGetEventsResponse;
+        })       
     }
 
 
-    getEvent(reqBody, params, user_id){
+    async getEvent(reqBody, params, user_id){
 
-        // get events of user
-        const event = this.dbEvents.find(x => {
-            if(x.event_id === params.id && x.event_starter === user_id){
-                return true;
+        return knex('events').where({'event_starter': user_id, 'event_id': params.id}).select()
+        .then(function(event) {
+            let sampleGetEventResponse = {}
+            if(event){
+                sampleGetEventResponse = {
+                    status: "SUCCESS",
+                    message: "event is found",
+                    user_id: user_id,
+                    event: event,
+                }
             }
-        });
-       
-        let sampleGetEventResponse = {}
-        if(event){
-            sampleGetEventResponse = {
-                status: "SUCCESS",
-                message: "event is found",
-                user_id: user_id,
-                event: event,
+            else{
+                sampleGetEventResponse = {
+                    status: "FAILURE",
+                    message: "event is not found",
+                }
             }
-        }
-        else{
-            sampleGetEventResponse = {
-                status: "FAILURE",
-                message: "event is not found",
-            }
-        }
 
-        return sampleGetEventResponse
+            return sampleGetEventResponse
+        })
     }
 
-
-    addEvent(reqBody, params, user_id){
+    async addEvent(reqBody, params, user_id){
 
         //check fields
         const fields = Object.keys(reqBody)
@@ -132,6 +128,8 @@ class Event {
 
         let sampleAddEventResponse = {}
         if(fieldCheck){
+            reqBody['event_starter'] = user_id;
+            knex('events').insert(reqBody).then();
             sampleAddEventResponse = {
                 status: "SUCCESS",
                 message: "new event is added",
@@ -160,38 +158,41 @@ class Event {
     }
 
 
-    deleteEvent(reqBody, params, user_id){
+    async deleteEvent(reqBody, params, user_id){
 
         // get events of user
-        const event = this.dbEvents.find(x => {
+        /*const event = this.dbEvents.find(x => {
             if(x.event_id === params.id && x.event_starter === user_id){
                 return true;
             }
-        });
+        });*/
+        var event =  await this.getEvent(reqBody, params, user_id);
 
-        let sampleDeleteEventResponse = {}
-        if(event){
-            sampleDeleteEventResponse = {
-                status: "SUCCESS",
-                message: "event is deleted",
-                user_id: user_id,
-                event: event
+        return knex('events').where({'event_starter': user_id, 'event_id':params.id}).del()
+        .then(function(num) {
+            let sampleDeleteEventResponse = {}
+            if(num > 0){
+                sampleDeleteEventResponse = {
+                    status: "SUCCESS",
+                    message: "event is deleted",
+                    user_id: user_id,
+                    event: event
+                }
             }
-        }
-        else{
-            sampleDeleteEventResponse = {
-                status: "FAILURE",
-                message: "event is not found",
+            else{
+                sampleDeleteEventResponse = {
+                    status: "FAILURE",
+                    message: "event is not found",
+                }
             }
-        }
 
-        return sampleDeleteEventResponse;
-
+            return sampleDeleteEventResponse;
+        })
     }
 
 
 
-    updateEvent(reqBody, params, user_id){
+    async updateEvent(reqBody, params, user_id){
 
         //check fields
         const fields = Object.keys(reqBody)
@@ -199,6 +200,7 @@ class Event {
 
         let sampleUpdateEventResponse = {}
         if(fieldCheck){
+            knex('events').where({'event_starter': user_id, 'event_id':params.id}).update(reqBody).then();
             sampleUpdateEventResponse = {
                 status: "SUCCESS",
                 message: "event is updated",
