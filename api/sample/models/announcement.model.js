@@ -42,61 +42,61 @@ class Announcement {
     }
     
 
-    getAnnouncements(reqBody, params, user_id){
+    async getAnnouncements(reqBody, params, user_id){
 
         // get announcements of user
-        //const announcements = this.dbAnnouncements.filter(x => x.ann_starter === user_id);
        
         let sampleGetAnnouncementsResponse = {}
-        const announcements = db.knex('announcement').select().where('ann_starter', user_id)
-        if(announcements && announcements.length !== 0){
-            sampleGetAnnouncementsResponse = {
-                status: "SUCCESS",
-                message: "all announcements of user are listed",
-                user_id: user_id,
-                announcements: announcements,
+        return knex('announcement').select().where('ann_starter', user_id)
+        .then(function(ann) {
+            if(ann && ann.length !== 0){
+                sampleGetAnnouncementsResponse = {
+                    status: "SUCCESS",
+                    message: "all announcements of user are listed",
+                    user_id: user_id,
+                    announcements: ann,
+                }
             }
-        }
-        else{
-            sampleGetAnnouncementsResponse = {
-                status: "FAILURE",
-                message: "announcements are not found",
+            else{
+                sampleGetAnnouncementsResponse = {
+                    status: "FAILURE",
+                    message: "announcements are not found",
+                }
             }
-        }
-
-        return sampleGetAnnouncementsResponse
+    
+            return sampleGetAnnouncementsResponse;
+        })
+       
     }
 
-    getAnnouncement(reqBody, params, user_id){
+    async getAnnouncement(reqBody, params, user_id){
 
         // get announcements of user
-        /*const announcement = this.dbAnnouncements.find(x => {
-            if(x.announcement_id === params.id && x.ann_starter === user_id){
-                return true;
-            }
-        });*/
        
-        const announcement = db.knex('announcement').select().where({'announcement_id': params.id, 'ann_starter': user_id})
-        let sampleGetAnnouncementResponse = {}
-        if(announcement){
-            sampleGetAnnouncementResponse = {
-                status: "SUCCESS",
-                message: "announcement is found",
-                user_id: user_id,
-                announcement: announcement,
+        return knex('announcement').select().where({'announcement_id': params.id, 'ann_starter': user_id})
+        .then(function(ann) {
+            let sampleGetAnnouncementResponse = {}
+            if(ann){
+                sampleGetAnnouncementResponse = {
+                    status: "SUCCESS",
+                    message: "announcement is found",
+                    user_id: user_id,
+                    announcement: ann,
+                }
             }
-        }
-        else{
-            sampleGetAnnouncementResponse = {
-                status: "FAILURE",
-                message: "announcement is not found",
+            else{
+                sampleGetAnnouncementResponse = {
+                    status: "FAILURE",
+                    message: "announcement is not found",
+                }
             }
-        }
-
-        return sampleGetAnnouncementResponse
+    
+            return sampleGetAnnouncementResponse;
+        })
+        
     }
 
-    addAnnouncement(reqBody, params, user_id){
+    async addAnnouncement(reqBody, params, user_id){
 
         //check fields
         const fields = Object.keys(reqBody)
@@ -104,8 +104,8 @@ class Announcement {
 
         let sampleAddAnnouncementResponse = {}
         if(fieldCheck){
-            const temp = {...JSON.parse({'ann_starter':user_id}), ...JSON.parse(reqBody)}
-            db.knex('announcement').insert(temp)
+            reqBody['ann_starter'] = user_id;
+            db.knex('announcement').insert(temp).then();
             sampleAddAnnouncementResponse = {
                 status: "SUCCESS",
                 message: "new announcement is added",
@@ -132,52 +132,44 @@ class Announcement {
 
     }
 
-    deleteAnnouncement(reqBody, params, user_id){
+    async deleteAnnouncement(reqBody, params, user_id){
 
         // get announcements of user
-        /*const announcement = this.dbAnnouncements.find(x => {
-            if(x.announcement_id === params.id && x.ann_starter === user_id){
-                return true;
+        const announcement = await this.getAnnouncement(reqBody, params, user_id);
+        return knex('announcement').where({'ann_starter': user_id, 'announcement_id':params.id}).del()
+        .then(function(num) {
+            let sampleDeleteAnnouncementResponse = {}
+            if(num > 0){
+                sampleDeleteAnnouncementResponse = {
+                    status: "SUCCESS",
+                    message: "announcement is deleted",
+                    user_id: user_id,
+                    announcement: announcement
+                }
             }
-        });*/
-
-        const announcement = db.knex('announcement').where({'ann_starter': user_id, 'announcement_id':params.id}).delete()
-        let sampleDeleteAnnouncementResponse = {}
-        if(announcement > 0){
-            sampleDeleteAnnouncementResponse = {
-                status: "SUCCESS",
-                message: "announcement is deleted",
-                user_id: user_id,
-                announcement: announcement
+            else{
+                sampleDeleteAnnouncementResponse = {
+                    status: "FAILURE",
+                    message: "announcement is not found",
+                }
             }
-        }
-        else{
-            sampleDeleteAnnouncementResponse = {
-                status: "FAILURE",
-                message: "announcement is not found",
-            }
-        }
-
-        return sampleDeleteAnnouncementResponse;
-
+    
+            return sampleDeleteAnnouncementResponse;
+        })
     }
 
-    updateAnnouncement(reqBody, params, user_id){
+    async updateAnnouncement(reqBody, params, user_id){
 
         //check fields
         const fields = Object.keys(reqBody)
         const fieldCheck = fields.length < 6
-
-        // check db
-        /*const announcement = this.dbAnnouncements.find(x => {
-            if(x.announcement_id === params.id && x.ann_starter === user_id){
-                return true;
-            }
-        });*/
-        
         let sampleUpdateAnnouncementResponse = {}
+        // check db
+        const announcement = await this.getAnnouncement(reqBody, params, user_id);
+        
+        
         if(fieldCheck && announcement){
-            knex('announcement').where({'ann_starter': user_id, 'announcement_id':params.id}).update(reqBody)
+            knex('announcement').where({'ann_starter': user_id, 'announcement_id':params.id}).update(reqBody).then();
             sampleUpdateAnnouncementResponse = {
                 status: "SUCCESS",
                 message: "announcement is updated.",

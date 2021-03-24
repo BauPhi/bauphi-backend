@@ -1,4 +1,4 @@
-const db = require('../dbfunctions/dbControls');
+const knex = require('../../dbfunctions/dbControls');
 class User {
 
     constructor(){
@@ -37,46 +37,48 @@ class User {
         else return value;
     }
 
-    login(reqBody, params){
+    async login(reqBody, params){
 
-        //const user = this.dbUsers.find(x => x.email === reqBody.email);
-
-        const user = db.knex('users').select({'email':reqBody.email})
-        // check if login request is valid
-        const isValid = user.password === reqBody.password;
-        
-        let sampleLoginResponse = {}
-
-        if(isValid){
-            //const safeUser = this.safeUsers.find(x => x.email === reqBody.email);
-            const safeUser = user
-            var start_time = new Date(new Date().getTime())
-            var expire_time = new Date(new Date().getTime() + (12*60*60*1000))
-
-            sampleLoginResponse = {
-                status: "SUCCESS",
-                message: "login is successful",
-                user: safeUser,
-                session: {
-                    start_time: start_time.toString(),
-                    expire_time: expire_time.toString(),
-                    session_key: "admin"
+        let user = "";
+        let isValid = false;
+        return await knex('users').select({'email':reqBody.email})
+        .then(function(user) {
+            isValid = (user[0].password === reqBody.password);
+    
+            if(isValid){
+                const safeUser = user;
+                var start_time = new Date(new Date().getTime())
+                var expire_time = new Date(new Date().getTime() + (12*60*60*1000))
+    
+                sampleLoginResponse = {
+                    status: "SUCCESS",
+                    message: "login is successful",
+                    user: safeUser,
+                    session: {
+                        start_time: start_time.toString(),
+                        expire_time: expire_time.toString(),
+                        session_key: "admin"
+                    }
                 }
             }
-        }
-        else{
-            sampleLoginResponse = {
-                status: "SUCCESS",
-                message: "login has failed"
+            else{
+                sampleLoginResponse = {
+                    status: "SUCCESS",
+                    message: "login has failed"
+                }
             }
+    
+            return sampleLoginResponse;
         }
-
-        return sampleLoginResponse;
+        )
+        // check if login request is valid
+        
     }
+        
 
-    getAllUsers(reqBody, params){
+    async getAllUsers(reqBody, params){
 
-        const users = knex('users').select()
+        const users = await knex('users').select().then()
         let sampleUsersResponse = {
             status: "SUCCESS",
             message: "all users are listed",
@@ -86,31 +88,32 @@ class User {
         return sampleUsersResponse;
     }
 
-    getUser(reqBody, params){
-        
-        // check if request is valid
-        const user = db.knex('users').select({'user_id':params.id})
-        //const user = this.safeUsers.find(x => x.user_id === params.id);
-
+    async getUser(reqBody, params){
         let sampleGetUserResponse = {}
-        if(user){
-            sampleGetUserResponse = {
-                status: "SUCCESS",
-                message: "user is found",
-                user: user
+        // check if request is valid
+        return knex('users').select({'user_id':params.id})
+        .then(function() {
+            
+            if(user){
+                sampleGetUserResponse = {
+                    status: "SUCCESS",
+                    message: "user is found",
+                    user: user
+                }
             }
-        }
-        else{
-            sampleGetUserResponse = {
-                status: "FAILURE",
-                message: "user is not found"
+            else{
+                sampleGetUserResponse = {
+                    status: "FAILURE",
+                    message: "user is not found"
+                }
             }
-        }
 
         return sampleGetUserResponse;
+        }).catch((err) => console.log(err));
+        
     }
 
-    addUser(reqBody, params){
+    async addUser(reqBody, params){
 
         // check if new user entry is valid
         const fields = Object.keys(reqBody)
@@ -118,12 +121,12 @@ class User {
 
         let sampleAddUserResponse = "";
         if(fieldCheck){
-        db.knex('users').insert(reqBody)
+        db.knex('users').insert(reqBody).then();
             sampleAddUserResponse = {
                 status: "SUCCESS",
                 message: "new user is added(sample)",
                 user: {
-                    user_id: Math.floor(Math.random()*100 +1).toString(),
+                    //user_id: Math.floor(Math.random()*100 +1).toString(),
                     name: reqBody.name,
                     surname: reqBody.surname,
                     email: reqBody.email,
@@ -143,31 +146,33 @@ class User {
         return sampleAddUserResponse;
     }
 
-    deleteUser(reqBody, params){
+    async deleteUser(reqBody, params){
         
         // check if request is valid
         //const user = this.safeUsers.find(x => x.user_id === params.id);
 
         let sampleDeleteUserResponse = {}
-        db.knex('users').where('user_id', params.id).delete()
-        if(user){
-            sampleDeleteUserResponse = {
-                status: "SUCCESS",
-                message: "user is deleted",
-                user: user
+        return sampleDeleteUserResponse = await knex('users').where('user_id', params.id).delete()
+        .then(function() {
+            if(user.user){
+                sampleDeleteUserResponse = {
+                    status: "SUCCESS",
+                    message: "user is deleted",
+                    user: user.user
+                }
             }
-        }
-        else{
-            sampleDeleteUserResponse = {
-                status: "FAILURE",
-                message: "user is not found"
+            else{
+                sampleDeleteUserResponse = {
+                    status: "FAILURE",
+                    message: "user is not found"
+                }
             }
-        }
-
-        return sampleDeleteUserResponse;
+    
+            return sampleDeleteUserResponse;
+        });
     }
 
-    updateUser(reqBody, params){
+    async updateUser(reqBody, params){
 
         // check if request is valid
         //const user = this.dbUsers.find(x => x.user_id === params.id);
@@ -175,12 +180,13 @@ class User {
         // check if new user entry is valid
         const fields = Object.keys(reqBody)
         const fieldCheck = fields.length < 6
+        const user = await this.getUser(reqBody, params);
 
         let sampleUpdateUserResponse = {}
 
 
         if(fieldCheck && user){
-            db.knex('users').where('user_id', params.id).update(reqBody)
+            knex('users').where('user_id', params.id).update(reqBody).then();
             sampleUpdateUserResponse = {
                 status: "SUCCESS",
                 message: "user is updated(sample)",

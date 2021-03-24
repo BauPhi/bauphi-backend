@@ -2,8 +2,8 @@
 exports.up = function(knex) {
   return knex.schema.createTableIfNotExists('users', table => {
     table.increments('user_id').primary()
-    table.boolean('is_guest').notNullable()
-    table.string('firstname').notNullable()
+    //table.boolean('is_guest').notNullable()
+    table.string('name').notNullable()
     table.string('surname').notNullable()
     table.string('email')
     table.string('phone')
@@ -15,7 +15,7 @@ exports.up = function(knex) {
     table.integer('home_owner').references('user_id').inTable('users').onUpdate('CASCADE').onDelete('CASCADE')
     table.string('home_name')
     table.string('country')
-    table.string('area')
+    table.string('state')
     table.string('city')
     table.string('neighbourhood')
     table.float('latitude')

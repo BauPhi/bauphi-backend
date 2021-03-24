@@ -22,10 +22,11 @@ const pg = require('knex')({
 
   function schemaCreation() {
     return knex.schema.createTable('users', table => {
-      table.increments('userid').primary()
-      table.boolean('is_guest').notNullable()
-      table.string('firstname').notNullable()
+      table.increments('user_id').primary()
+      //table.boolean('is_guest').notNullable()
+      table.string('name').notNullable()
       table.string('surname').notNullable()
+      table.string('password')
       table.string('email')
       table.string('phone')
   })
@@ -36,7 +37,7 @@ const pg = require('knex')({
       table.integer('home_owner').references('userid').inTable('users')
       table.string('home_name')
       table.string('country')
-      table.string('area')
+      table.string('state')
       table.string('city')
       table.string('neighbourhood')
       table.float('latitude')
