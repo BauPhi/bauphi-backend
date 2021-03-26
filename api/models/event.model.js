@@ -108,94 +108,98 @@ class Event {
         return knex('events').where({'event_starter': user_id, 'event_id': params.id}).select()
         .then(function(event) {
             let sampleGetEventResponse = {}
-            if(event){
-                sampleGetEventResponse = {
+            if(event.length !== 0){
+                return {
                     status: "SUCCESS",
                     message: "event is found",
-                    user_id: user_id,
-                    event: event,
+                    event: event[0],
                 }
             }
             else{
-                sampleGetEventResponse = {
+                return {
                     status: "FAILURE",
                     message: "event is not found",
                 }
             }
-
-            return sampleGetEventResponse
         }).catch((err) => {
-            sampleGetUserResponse = {
+            console.log(err)
+            return {
                 status: "FAILURE",
                 message: "db error"
             }
-            console.log(err)
-            return sampleGetUserResponse;
         });
     }
 
     async addEvent(reqBody, params, user_id){
 
-        //check fields
-        const fields = Object.keys(reqBody)
-        const fieldCheck = fields.includes("event_start" && "event_end" && "title" && "description" && "type") && fields.length < 6
-        reqBody['event_starter'] = user_id;
-        let sampleAddEventResponse = {}
-        if(fieldCheck){
-            return knex('events').insert(reqBody)
-            .then(function(event) {
-                sampleAddEventResponse = {
-                    status: "SUCCESS",
-                    message: "new event is added",
-                    user_id: user_id,
-                    event: {
-                        event_id: Math.floor(Math.random()*100 +1).toString(),
-                        event_starter: user_id,
-                        event_start: reqBody.event_start,
-                        event_end: reqBody.event_end,
-                        title: reqBody.title,
-                        description: reqBody.description,
-                        type: reqBody.type,
-                        additionalData: {}
-                    }
-                }
-                
-                return sampleAddEventResponse;
-            }).catch((err) => {
-                sampleGetUserResponse = {
-                    status: "FAILURE",
-                    message: "db error"
-                }
-                console.log(err)
-                return sampleGetUserResponse;
-            });   
-        }
+        var tablename = ""
+        if(reqBody.type === "Meeting")
+            tablename = "meeting"
+        else if(reqBody.type === "Donation/Money")
+            tablename = "money"
+        else if(reqBody.type === "Donation/Supply")
+            tablename = "supply"
         else{
-            sampleAddEventResponse = {
+            return {
                 status: "FAILURE",
-                message: "request body fields are not true"
+                message: "event type is undefined"
             }
         }
 
-        return sampleAddEventResponse;
+        //check fields
+        //const fields = Object.keys(reqBody)
+        //const fieldCheck = fields.includes("event_start" && "event_end" && "title" && "description" && "type") && fields.length < 6
+        reqBody['event_starter'] = user_id;
+        
+        return knex(tablename).insert(reqBody).returning('event_id')
+        .then((id) => {
+            return {
+                status: "SUCCESS",
+                message: "meeting event is added",
+                event: {
+                    event_id: "" + id[0],
+                    event_starter: user_id,
+                    start_time: reqBody.start_time,
+                    end_time: reqBody.end_time,
+                    title: reqBody.title,
+                    description: reqBody.description,
+                    type: reqBody.type,
+                    additionalData: {
+                        isEmergency: reqBody.isEmergency,
+                        country: reqBody.isEmergency,
+                        state: reqBody.state,
+                        city: reqBody.city,
+                        neighbourhood: reqBody.neighbourhood,
+                        latitude: reqBody.latitude,
+                        longitude: reqBody.longitude,
+                        currency: reqBody.currency,
+                        amount: reqBody.amount,
+                    }
+                }
+            }
+        })
+        .catch((err) => {
+            console.log(err)
+            return {
+                status: "FAILURE",
+                message: "db error when adding meeting event"
+            }
+        })
+        
+        
     }
+       
+    
 
 
     async deleteEvent(reqBody, params, user_id){
 
-        // get events of user
-        /*const event = this.dbEvents.find(x => {
-            if(x.event_id === params.id && x.event_starter === user_id){
-                return true;
-            }
-        });*/
-        var event =  await this.getEvent(reqBody, params, user_id);
+        var event = await this.getEvent(reqBody, params, user_id);
 
         return knex('events').where({'event_starter': user_id, 'event_id':params.id}).del()
         .then(function(num) {
-            let sampleDeleteEventResponse = {}
             if(num > 0){
-                sampleDeleteEventResponse = {
+                return{
                     status: "SUCCESS",
                     message: "event is deleted",
                     user_id: user_id,
@@ -203,20 +207,18 @@ class Event {
                 }
             }
             else{
-                sampleDeleteEventResponse = {
+                return {
                     status: "FAILURE",
                     message: "event is not found",
                 }
             }
 
-            return sampleDeleteEventResponse;
         }).catch((err) => {
-            sampleGetUserResponse = {
+            console.log(err)
+            return {
                 status: "FAILURE",
                 message: "db error"
             }
-            console.log(err)
-            return sampleGetUserResponse;
         });
     }
 
@@ -232,7 +234,7 @@ class Event {
         if(fieldCheck){
             knex('events').where({'event_starter': user_id, 'event_id':params.id}).update(reqBody)
             .then(function(event){
-                sampleUpdateEventResponse = {
+                return {
                     status: "SUCCESS",
                     message: "event is updated",
                     user_id: user_id,
@@ -258,24 +260,21 @@ class Event {
                     }
                 }
 
-                return sampleUpdateEventResponse;
             }).catch((err) => {
-                sampleGetUserResponse = {
+                console.log(err)
+                return {
                     status: "FAILURE",
                     message: "db error"
                 }
-                console.log(err)
-                return sampleGetUserResponse;
             });   
         }
         else{
-            sampleUpdateEventResponse = {
+            return {
                 status: "FAILURE",
                 message: "request body fields are not true"
             }
         }
 
-        return sampleUpdateEventResponse;
 
     }
 }

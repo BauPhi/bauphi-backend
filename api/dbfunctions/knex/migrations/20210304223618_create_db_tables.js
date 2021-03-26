@@ -35,10 +35,11 @@ exports.up = function(knex) {
 .createTableIfNotExists('events', table => {
     table.increments('event_id').primary()
     table.integer('event_starter').references('user_id').inTable('users').onUpdate('CASCADE').onDelete('CASCADE')
-    table.date('event_start')
-    table.date('event_end')
+    table.datetime('start_time')
+    table.datetime('end_time')
     table.string('title')
     table.string('description')
+    table.string('type')
 })
 
 .createTableIfNotExists('attend', table => {
@@ -64,7 +65,7 @@ exports.up = function(knex) {
 .createTableIfNotExists('meeting', table => {
     table.boolean('is_emergency')
     table.string('country')
-    table.string('area')
+    table.string('state')
     table.string('city')
     table.string('neighbourhood')
     table.float('latitude')
@@ -79,7 +80,7 @@ exports.up = function(knex) {
 })
 .createTableIfNotExists('supply', table => {
     table.string('country')
-    table.string('area')
+    table.string('state')
     table.string('city')
     table.string('neighbourhood')
     table.float('latitude')
