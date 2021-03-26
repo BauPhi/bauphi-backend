@@ -75,7 +75,7 @@ exports.up = function(knex) {
 
 .createTableIfNotExists('money', table => {
     table.string('currency')
-    table.integer('amount')
+    table.integer('amount').defaultTo(10)
     table.inherits('donations')
 })
 .createTableIfNotExists('supply', table => {
