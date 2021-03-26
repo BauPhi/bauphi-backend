@@ -1,58 +1,13 @@
 const knex = require('../../dbfunctions/dbControls');
 class Home {
-    constructor(){
-        this.dbHomes = [
-            {
-                home_id: "1",
-                home_owner: "1",
-                country: "Turkey",
-                state: "İstanbul",
-                city: "Sarıyer",
-                neighbourhood: "Zekeriyaköy Mah. X Cad. Y Sok. No: 1/2",
-                latitude: "41.201170",
-                longitude: "29.032128"
-            },
-            {
-                home_id: "2",
-                home_owner: "2",
-                country: "Turkey",
-                state: "Kastamonu",
-                city: "Merkez",
-                neighbourhood: "Aktekke Mah. X Cad. Y Sok. No: 1/2",
-                latitude: "41.381227",
-                longitude: "33.782458"
-            },
-            {
-                home_id: "3",
-                home_owner: "1",
-                country: "Turkey",
-                state: "İstanbul",
-                city: "Beykoz",
-                neighbourhood: "İncirköy Mah. X Cad. Y Sok. No: 1/2",
-                latitude: "41.121082",
-                longitude: "29.122104"
-            },
-            {
-                home_id: "4",
-                home_owner: "3",
-                country: "Turkey",
-                state: "Akdeniz Bölgesi",
-                city: "Mersin",
-                neighbourhood: "Selçuklar Mah. X Cad. Y Sok. No: 1/2 Toroslar",
-                latitude: "36.821536",
-                longitude: "34.624811"
-            }
-        ]
-    }
 
     async getHomes(reqBody, params, user_id){
 
         // get homes of user
         return knex('home').select().where('home_owner', user_id)
-        .then(function(home) {
-            let sampleGetHomesResponse = {}
+        .then(function(homes) {
             if(homes && homes.length !== 0){
-                sampleGetHomesResponse = {
+                return {
                     status: "SUCCESS",
                     message: "all homes of user are listed",
                     user_id: user_id,
@@ -60,20 +15,18 @@ class Home {
                 }
             }
             else{
-                sampleGetHomesResponse = {
+                return {
                     status: "FAILURE",
                     message: "homes are not found",
                 }
             }
 
-            return sampleGetHomesResponse;
         }).catch((err) => {
-            sampleGetUserResponse = {
+            console.log(err)
+            return {
                 status: "FAILURE",
                 message: "db error"
             }
-            console.log(err)
-            return sampleGetUserResponse;
         });
         
     }
@@ -83,9 +36,8 @@ class Home {
         // get homes of user
         return knex('home').select().where({'home_owner': user_id, 'home_id' : params.id})
        .then(function(home) {
-            let sampleGetHomeResponse = {}
-            if(home){
-                sampleGetHomeResponse = {
+            if(home.length !== 0){
+                return {
                     status: "SUCCESS",
                     message: "home is found",
                     user_id: user_id,
@@ -93,21 +45,19 @@ class Home {
                 }
             }
             else{
-                sampleGetHomeResponse = {
+                return {
                     status: "FAILURE",
                     message: "home is not found",
                 }
             }
 
-            return sampleGetHomeResponse;
        }).catch((err) => {
-        sampleGetUserResponse = {
-            status: "FAILURE",
-            message: "db error"
-        }
-        console.log(err)
-        return sampleGetUserResponse;
-    });
+            console.log(err)
+            return {
+                status: "FAILURE",
+                message: "db error"
+            }
+        });
         
     }
 
@@ -116,20 +66,19 @@ class Home {
 
         //check fields
         const fields = Object.keys(reqBody)
-        const fieldCheck = fields.includes("home_owner" && "home_name" && "country" && "state" && "city" && "neighbourhood" && "latitude" && "longitude") && fields.length < 9
+        const fieldCheck = fields.includes("home_owner" && "isVisible" && "home_name" && "country" && "state" && "city" && "neighbourhood" && "latitude" && "longitude") && fields.length < 10
         reqBody['home_owner'] = user_id;
-        let sampleAddHomeResponse = {}
         if(fieldCheck){
             return knex('home').insert(reqBody)
             .then(function(home) {
-                sampleAddHomeResponse = {
+                return {
                     status: "SUCCESS",
                     message: "new home is added",
                     user_id: user_id,
                     home: {
-                        //home_id: Math.floor(Math.random()*100 +1).toString(), auto increment, not needed
                         home_owner: reqBody.home_owner,
                         home_name: reqBody.home_name,
+                        isVisible: reqBody.isVİsible,
                         country: reqBody.country,
                         state: reqBody.state,
                         city: reqBody.city,
@@ -138,35 +87,30 @@ class Home {
                         longitude: reqBody.longitude
                     }
                 }
-                return sampleAddHomeResponse;
             }).catch((err) => {
-                sampleGetUserResponse = {
+                console.log(err)
+                return {
                     status: "FAILURE",
                     message: "db error"
                 }
-                console.log(err)
-                return sampleGetUserResponse;
             });
         }
         else{
-            sampleAddHomeResponse = {
+            return {
                 status: "FAILURE",
                 message: "request body fields are not true"
             }
         }
-
-        return sampleAddHomeResponse;
     }
         
     
 
     async deleteHome(reqBody, params, user_id){
-        let sampleDeleteHomeResponse = {};
         var home = await this.getHome(reqBody, params, user_id);
         return knex('home').where({'home_owner': user_id, 'home_id':params.id}).del()
         .then(function(num) {
             if(num > 0){
-                sampleDeleteHomeResponse = {
+                return {
                     status: "SUCCESS",
                     message: "home is deleted",
                     user_id: user_id,
@@ -174,36 +118,29 @@ class Home {
                 }
             }
             else{
-                sampleDeleteHomeResponse = {
+                return {
                     status: "FAILURE",
                     message: "home is not found",
                 }
             }
     
-            return sampleDeleteHomeResponse;
         }).catch((err) => {
-            sampleGetUserResponse = {
+            console.log(err)
+            return {
                 status: "FAILURE",
                 message: "db error"
             }
-            console.log(err)
-            return sampleGetUserResponse;
         });
     }
     
     async updateHome(reqBody, params, user_id){
 
-        // check fields
-        const fields = Object.keys(reqBody)
-        const fieldCheck = fields.length < 9
-
         const home = await this.getHome(reqBody, params, user_id);
 
-        let sampleUpdateHomeResponse = {}
-        if(fieldCheck && home){
+        if(home.home){
             return knex('home').where({'home_owner': user_id,'home_id': params.id}).update(reqBody)
             .then(function() {
-                sampleUpdateHomeResponse = {
+                return {
                     status: "SUCCESS",
                     message: "home is updated",
                     user_id: user_id,
@@ -219,20 +156,18 @@ class Home {
                         longitude: reqBody.longitude
                     }
                 }       
-            return sampleUpdateHomeResponse;
             }).catch((err) => {
-                sampleGetUserResponse = {
+                console.log(err)
+                return {
                     status: "FAILURE",
                     message: "db error"
                 }
-                console.log(err)
-                return sampleGetUserResponse;
             });
         }
         else {
-            sampleUpdateHomeResponse = {
+            return {
                 status: "FAILURE",
-                message: "request body fields are not true"
+                message: "home is not found"
             }
         }
     }
