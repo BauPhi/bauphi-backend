@@ -92,7 +92,14 @@ class Event {
             }
     
             return sampleGetEventsResponse;
-        })       
+        }).catch((err) => {
+            sampleGetUserResponse = {
+                status: "FAILURE",
+                message: "db error"
+            }
+            console.log(err)
+            return sampleGetUserResponse;
+        });       
     }
 
 
@@ -117,7 +124,14 @@ class Event {
             }
 
             return sampleGetEventResponse
-        })
+        }).catch((err) => {
+            sampleGetUserResponse = {
+                status: "FAILURE",
+                message: "db error"
+            }
+            console.log(err)
+            return sampleGetUserResponse;
+        });
     }
 
     async addEvent(reqBody, params, user_id){
@@ -125,26 +139,36 @@ class Event {
         //check fields
         const fields = Object.keys(reqBody)
         const fieldCheck = fields.includes("event_start" && "event_end" && "title" && "description" && "type") && fields.length < 6
-
+        reqBody['event_starter'] = user_id;
         let sampleAddEventResponse = {}
         if(fieldCheck){
-            reqBody['event_starter'] = user_id;
-            knex('events').insert(reqBody).then();
-            sampleAddEventResponse = {
-                status: "SUCCESS",
-                message: "new event is added",
-                user_id: user_id,
-                event: {
-                    event_id: Math.floor(Math.random()*100 +1).toString(),
-                    event_starter: user_id,
-                    event_start: reqBody.event_start,
-                    event_end: reqBody.event_end,
-                    title: reqBody.title,
-                    description: reqBody.description,
-                    type: reqBody.type,
-                    additionalData: {}
+            return knex('events').insert(reqBody)
+            .then(function(event) {
+                sampleAddEventResponse = {
+                    status: "SUCCESS",
+                    message: "new event is added",
+                    user_id: user_id,
+                    event: {
+                        event_id: Math.floor(Math.random()*100 +1).toString(),
+                        event_starter: user_id,
+                        event_start: reqBody.event_start,
+                        event_end: reqBody.event_end,
+                        title: reqBody.title,
+                        description: reqBody.description,
+                        type: reqBody.type,
+                        additionalData: {}
+                    }
                 }
-            }
+                
+                return sampleAddEventResponse;
+            }).catch((err) => {
+                sampleGetUserResponse = {
+                    status: "FAILURE",
+                    message: "db error"
+                }
+                console.log(err)
+                return sampleGetUserResponse;
+            });   
         }
         else{
             sampleAddEventResponse = {
@@ -154,7 +178,6 @@ class Event {
         }
 
         return sampleAddEventResponse;
-
     }
 
 
@@ -176,7 +199,7 @@ class Event {
                     status: "SUCCESS",
                     message: "event is deleted",
                     user_id: user_id,
-                    event: event
+                    event: event.event
                 }
             }
             else{
@@ -187,7 +210,14 @@ class Event {
             }
 
             return sampleDeleteEventResponse;
-        })
+        }).catch((err) => {
+            sampleGetUserResponse = {
+                status: "FAILURE",
+                message: "db error"
+            }
+            console.log(err)
+            return sampleGetUserResponse;
+        });
     }
 
 
@@ -200,32 +230,43 @@ class Event {
 
         let sampleUpdateEventResponse = {}
         if(fieldCheck){
-            knex('events').where({'event_starter': user_id, 'event_id':params.id}).update(reqBody).then();
-            sampleUpdateEventResponse = {
-                status: "SUCCESS",
-                message: "event is updated",
-                user_id: user_id,
-                event: {
-                    event_id: params.id,
-                    event_starter: user_id,
-                    event_start: reqBody.event_start,
-                    event_end: reqBody.event_end,
-                    title: reqBody.title,
-                    description: reqBody.description,
-                    type: reqBody.type,
-                    additionalData: {
-                        isEmergency: reqBody.isEmergency,
-                        country: reqBody.country,
-                        state: reqBody.state,
-                        city: reqBody.city,
-                        neighbourhood: reqBody.neighbourhood,
-                        latitude: reqBody.latitude,
-                        longitude: reqBody.longitude,
-                        currency: reqBody.currency,
-                        amount: reqBody.amount
+            knex('events').where({'event_starter': user_id, 'event_id':params.id}).update(reqBody)
+            .then(function(event){
+                sampleUpdateEventResponse = {
+                    status: "SUCCESS",
+                    message: "event is updated",
+                    user_id: user_id,
+                    event: {
+                        event_id: params.id,
+                        event_starter: user_id,
+                        event_start: reqBody.event_start,
+                        event_end: reqBody.event_end,
+                        title: reqBody.title,
+                        description: reqBody.description,
+                        type: reqBody.type,
+                        additionalData: {
+                            isEmergency: reqBody.isEmergency,
+                            country: reqBody.country,
+                            state: reqBody.state,
+                            city: reqBody.city,
+                            neighbourhood: reqBody.neighbourhood,
+                            latitude: reqBody.latitude,
+                            longitude: reqBody.longitude,
+                            currency: reqBody.currency,
+                            amount: reqBody.amount
+                        }
                     }
                 }
-            }
+
+                return sampleUpdateEventResponse;
+            }).catch((err) => {
+                sampleGetUserResponse = {
+                    status: "FAILURE",
+                    message: "db error"
+                }
+                console.log(err)
+                return sampleGetUserResponse;
+            });   
         }
         else{
             sampleUpdateEventResponse = {

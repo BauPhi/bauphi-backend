@@ -65,8 +65,14 @@ class Announcement {
             }
     
             return sampleGetAnnouncementsResponse;
-        })
-       
+        }).catch((err) => {
+            sampleGetUserResponse = {
+                status: "FAILURE",
+                message: "db error"
+            }
+            console.log(err)
+            return sampleGetUserResponse;
+        });     
     }
 
     async getAnnouncement(reqBody, params, user_id){
@@ -92,8 +98,14 @@ class Announcement {
             }
     
             return sampleGetAnnouncementResponse;
-        })
-        
+        }).catch((err) => {
+            sampleGetUserResponse = {
+                status: "FAILURE",
+                message: "db error"
+            }
+            console.log(err)
+            return sampleGetUserResponse;
+        });    
     }
 
     async addAnnouncement(reqBody, params, user_id){
@@ -102,24 +114,35 @@ class Announcement {
         const fields = Object.keys(reqBody)
         const fieldCheck = fields.includes("image" && "phone" && "title" && "description" && "isHuman") && fields.length < 6
 
-        let sampleAddAnnouncementResponse = {}
+        reqBody['ann_starter'] = user_id;
+        let sampleAddAnnouncementResponse = {};
+        
         if(fieldCheck){
-            reqBody['ann_starter'] = user_id;
-            db.knex('announcement').insert(temp).then();
-            sampleAddAnnouncementResponse = {
-                status: "SUCCESS",
-                message: "new announcement is added",
-                user_id: user_id,
-                announcement: {
-                    announcement_id: Math.floor(Math.random()*100 +1).toString(),
-                    ann_starter: reqBody.ann_starter,
-                    image: reqBody.image,
-                    phone: reqBody.phone,
-                    title: reqBody.title,
-                    description: reqBody.description,
-                    isHuman: reqBody.isHuman,
+            return knex('announcement').insert(reqBody)
+            .then(function(ann) {
+                sampleAddAnnouncementResponse = {
+                    status: "SUCCESS",
+                    message: "new announcement is added",
+                    user_id: user_id,
+                    announcement: {
+                        announcement_id: Math.floor(Math.random()*100 +1).toString(),
+                        ann_starter: reqBody.ann_starter,
+                        image: reqBody.image,
+                        phone: reqBody.phone,
+                        title: reqBody.title,
+                        description: reqBody.description,
+                        isHuman: reqBody.isHuman,
+                    }
                 }
-            }
+                return sampleAddAnnouncementResponse;
+            }).catch((err) => {
+                sampleGetUserResponse = {
+                    status: "FAILURE",
+                    message: "db error"
+                }
+                console.log(err)
+                return sampleGetUserResponse;
+            });
         }
         else{
             sampleAddAnnouncementResponse = {
@@ -127,9 +150,7 @@ class Announcement {
                 message: "request body fields are not true"
             }
         }
-
         return sampleAddAnnouncementResponse;
-
     }
 
     async deleteAnnouncement(reqBody, params, user_id){
@@ -144,7 +165,7 @@ class Announcement {
                     status: "SUCCESS",
                     message: "announcement is deleted",
                     user_id: user_id,
-                    announcement: announcement
+                    announcement: announcement.announcement
                 }
             }
             else{
@@ -155,7 +176,14 @@ class Announcement {
             }
     
             return sampleDeleteAnnouncementResponse;
-        })
+        }).catch((err) => {
+            sampleGetUserResponse = {
+                status: "FAILURE",
+                message: "db error"
+            }
+            console.log(err)
+            return sampleGetUserResponse;
+        });
     }
 
     async updateAnnouncement(reqBody, params, user_id){
@@ -165,34 +193,52 @@ class Announcement {
         const fieldCheck = fields.length < 6
         let sampleUpdateAnnouncementResponse = {}
         // check db
-        const announcement = await this.getAnnouncement(reqBody, params, user_id);
-        
-        
-        if(fieldCheck && announcement){
-            knex('announcement').where({'ann_starter': user_id, 'announcement_id':params.id}).update(reqBody).then();
-            sampleUpdateAnnouncementResponse = {
-                status: "SUCCESS",
-                message: "announcement is updated.",
-                user_id: user_id,
-                announcement: {
-                    announcement_id: params.id,
-                    ann_starter: reqBody.ann_starter,
-                    image: reqBody.image,
-                    phone: reqBody.phone,
-                    title: reqBody.title,
-                    description: reqBody.description,
-                    isHuman: reqBody.isHuman,
+        return this.getAnnouncement(reqBody, params, user_id)
+        .then(function(ann) {
+            if(fieldCheck && ann){
+                return knex('announcement').where({'ann_starter': user_id, 'announcement_id':params.id}).update(reqBody)
+                .then(function(num) {
+                    sampleUpdateAnnouncementResponse = {
+                        status: "SUCCESS",
+                        message: "announcement is updated.",
+                        user_id: user_id,
+                        announcement: {
+                            announcement_id: params.id,
+                            ann_starter: reqBody.ann_starter,
+                            image: reqBody.image,
+                            phone: reqBody.phone,
+                            title: reqBody.title,
+                            description: reqBody.description,
+                            isHuman: reqBody.isHuman,
+                        }
+                    }
+
+                    return sampleUpdateAnnouncementResponse;
+                }).catch((err) => {
+                    sampleGetUserResponse = {
+                        status: "FAILURE",
+                        message: "db error"
+                    }
+                    console.log(err)
+                    return sampleGetUserResponse;
+                });
+            }
+            else{
+                sampleUpdateAnnouncementResponse = {
+                    status: "FAILURE",
+                    message: "request body fields are not true"
                 }
             }
-        }
-        else{
-            sampleUpdateAnnouncementResponse = {
+            return sampleUpdateAnnouncementResponse;
+        }).catch((err) => {
+            sampleGetUserResponse = {
                 status: "FAILURE",
-                message: "request body fields are not true"
+                message: "db error"
             }
-        }
-
-        return sampleUpdateAnnouncementResponse;
+            console.log(err)
+            return sampleGetUserResponse;
+        });
+        
     }
 
 

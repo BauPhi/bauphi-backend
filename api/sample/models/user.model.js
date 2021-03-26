@@ -48,7 +48,10 @@ class User {
 
     async getAllUsers(reqBody, params){
 
-        const users = await knex('users').select().then()
+        return knex('users').select().
+        then(function(users) {
+
+        
         let sampleUsersResponse = {
             status: "SUCCESS",
             message: "all users are listed",
@@ -56,6 +59,14 @@ class User {
         }
 
         return sampleUsersResponse;
+    }).catch((err) => {
+        sampleGetUserResponse = {
+            status: "FAILURE",
+            message: "db error"
+        }
+        console.log(err)
+        return sampleGetUserResponse;
+    });
     }
 
     async getUser(reqBody, params){

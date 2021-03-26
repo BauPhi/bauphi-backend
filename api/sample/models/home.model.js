@@ -67,14 +67,21 @@ class Home {
             }
 
             return sampleGetHomesResponse;
-        })
+        }).catch((err) => {
+            sampleGetUserResponse = {
+                status: "FAILURE",
+                message: "db error"
+            }
+            console.log(err)
+            return sampleGetUserResponse;
+        });
         
     }
 
     async getHome(reqBody, params, user_id){
 
         // get homes of user
-        return knex('home').select().where({'home_owner': user_id, 'home_id' : params.home_id})
+        return knex('home').select().where({'home_owner': user_id, 'home_id' : params.id})
        .then(function(home) {
             let sampleGetHomeResponse = {}
             if(home){
@@ -93,7 +100,14 @@ class Home {
             }
 
             return sampleGetHomeResponse;
-       })
+       }).catch((err) => {
+        sampleGetUserResponse = {
+            status: "FAILURE",
+            message: "db error"
+        }
+        console.log(err)
+        return sampleGetUserResponse;
+    });
         
     }
 
@@ -103,27 +117,36 @@ class Home {
         //check fields
         const fields = Object.keys(reqBody)
         const fieldCheck = fields.includes("home_owner" && "home_name" && "country" && "state" && "city" && "neighbourhood" && "latitude" && "longitude") && fields.length < 9
-
+        reqBody['home_owner'] = user_id;
         let sampleAddHomeResponse = {}
         if(fieldCheck){
-            reqBody['home_owner'] = user_id;
-            knex('home').insert(reqBody).then()
-            sampleAddHomeResponse = {
-                status: "SUCCESS",
-                message: "new home is added",
-                user_id: user_id,
-                home: {
-                    //home_id: Math.floor(Math.random()*100 +1).toString(), auto increment, not needed
-                    home_owner: reqBody.home_owner,
-                    home_name: reqBody.home_name,
-                    country: reqBody.country,
-                    state: reqBody.state,
-                    city: reqBody.city,
-                    neighbourhood: reqBody.neighbourhood,
-                    latitude: reqBody.latitude,
-                    longitude: reqBody.longitude
+            return knex('home').insert(reqBody)
+            .then(function(home) {
+                sampleAddHomeResponse = {
+                    status: "SUCCESS",
+                    message: "new home is added",
+                    user_id: user_id,
+                    home: {
+                        //home_id: Math.floor(Math.random()*100 +1).toString(), auto increment, not needed
+                        home_owner: reqBody.home_owner,
+                        home_name: reqBody.home_name,
+                        country: reqBody.country,
+                        state: reqBody.state,
+                        city: reqBody.city,
+                        neighbourhood: reqBody.neighbourhood,
+                        latitude: reqBody.latitude,
+                        longitude: reqBody.longitude
+                    }
                 }
-            }
+                return sampleAddHomeResponse;
+            }).catch((err) => {
+                sampleGetUserResponse = {
+                    status: "FAILURE",
+                    message: "db error"
+                }
+                console.log(err)
+                return sampleGetUserResponse;
+            });
         }
         else{
             sampleAddHomeResponse = {
@@ -133,27 +156,21 @@ class Home {
         }
 
         return sampleAddHomeResponse;
-
     }
+        
+    
 
     async deleteHome(reqBody, params, user_id){
-
-        // get homes of user
-        /*const home = this.dbHomes.find(x => {
-            if(x.home_id === params.id && x.home_owner === user_id){
-                return true;
-            }
-        });*/
         let sampleDeleteHomeResponse = {};
         var home = await this.getHome(reqBody, params, user_id);
-        knex('home').where({'home_owner': user_id, 'home_id':params.id}).del()
+        return knex('home').where({'home_owner': user_id, 'home_id':params.id}).del()
         .then(function(num) {
             if(num > 0){
                 sampleDeleteHomeResponse = {
                     status: "SUCCESS",
                     message: "home is deleted",
                     user_id: user_id,
-                    home: home
+                    home: home.home
                 }
             }
             else{
@@ -164,7 +181,14 @@ class Home {
             }
     
             return sampleDeleteHomeResponse;
-        })
+        }).catch((err) => {
+            sampleGetUserResponse = {
+                status: "FAILURE",
+                message: "db error"
+            }
+            console.log(err)
+            return sampleGetUserResponse;
+        });
     }
     
     async updateHome(reqBody, params, user_id){
@@ -177,34 +201,42 @@ class Home {
 
         let sampleUpdateHomeResponse = {}
         if(fieldCheck && home){
-            knex('home').where({'home_owner': user_id,'home_id': params.id}).update(reqBody).then();
-            sampleUpdateHomeResponse = {
-                status: "SUCCESS",
-                message: "home is updated",
-                user_id: user_id,
-                home: {
-                    home_id: params.id,
-                    home_owner: reqBody.home_owner,
-                    home_name: reqBody.home_name,
-                    country: reqBody.country,
-                    state: reqBody.state,
-                    city: reqBody.city,
-                    neighbourhood: reqBody.neighbourhood,
-                    latitude: reqBody.latitude,
-                    longitude: reqBody.longitude
+            return knex('home').where({'home_owner': user_id,'home_id': params.id}).update(reqBody)
+            .then(function() {
+                sampleUpdateHomeResponse = {
+                    status: "SUCCESS",
+                    message: "home is updated",
+                    user_id: user_id,
+                    home: {
+                        home_id: params.id,
+                        home_owner: reqBody.home_owner,
+                        home_name: reqBody.home_name,
+                        country: reqBody.country,
+                        state: reqBody.state,
+                        city: reqBody.city,
+                        neighbourhood: reqBody.neighbourhood,
+                        latitude: reqBody.latitude,
+                        longitude: reqBody.longitude
+                    }
+                }       
+            return sampleUpdateHomeResponse;
+            }).catch((err) => {
+                sampleGetUserResponse = {
+                    status: "FAILURE",
+                    message: "db error"
                 }
-            }
+                console.log(err)
+                return sampleGetUserResponse;
+            });
         }
-        else{
+        else {
             sampleUpdateHomeResponse = {
                 status: "FAILURE",
                 message: "request body fields are not true"
             }
         }
-
-        return sampleUpdateHomeResponse;
-
     }
+        
 
     async autoLocation(reqBody, params, user_id){
 
