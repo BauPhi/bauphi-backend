@@ -140,14 +140,14 @@ class User {
             return knex('users').where('user_id', params.id).delete()
             .then(function(queryResult){
                 if(queryResult){
-                    return res = {
+                    return {
                         status: "SUCCESS",
                         message: "user is deleted",
                         user: user
                     }
                 }
                 else{
-                    return res = {
+                    return {
                         status: "FAILURE",
                         message: "problem at finding user"
                     }
@@ -155,19 +155,18 @@ class User {
             })
             .catch((err) => {
                 console.log(err)
-                return res = {
+                return {
                     status: "FAILURE",
                     message: "db error"
                 }
             });
         })
         .catch((err) => {
-            let res = {
+            console.log(err)
+            return {
                 status: "FAILURE",
                 message: "db problem at finding user"
             }
-            console.log(err)
-            return res;
 
         })
     }
