@@ -16,6 +16,11 @@ homeRouter.post('/autoLocation', async (req, res) => {
     res.status(200).json(await validation.validateRequest(req, "home", "autoLocation", user_id))
 })
 
+homeRouter.get('/getCloseLocation', async (req, res) => {
+    const url = req.baseUrl.substring();
+    res.status(200).json(await validation.validateRequest(req, "home", "getCloseLocation"))
+})
+
 homeRouter.get('/:id', async (req, res) => {
     const url = req.baseUrl.substring();
     const user_id = url.substring(11, url.lastIndexOf('homes')-1)

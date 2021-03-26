@@ -53,6 +53,11 @@ class Validation {
                     mayFields: [],
                     sessionControl: true
                 },
+                "getCloseLocation": {
+                    mustFields: ["latitude", "longitude"],
+                    mayFields: [],
+                    sessionControl: false
+                },
                 "addHome": {
                     mustFields: ["home_owner", "home_name", "isVisible", "country", "state", "city", "neighbourhood", "latitude", "longitude"],
                     mayFields: [],
@@ -152,6 +157,8 @@ class Validation {
                 return home.getHome(reqBody, params, parentId);
             case "autoLocation": 
                 return home.autoLocation(reqBody, params, parentId);
+            case "getCloseLocation": 
+                return home.getCloseLocation(reqBody, params);
             case "addHome": 
                 return home.addHome(reqBody, params, parentId);
             case "deleteHome": 
