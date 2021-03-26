@@ -1,7 +1,7 @@
-const User = require('../sample/models/user.model')
+const User = require('../models/user.model')
 const user = new User()
 
-const Home = require('../sample/models/home.model')
+const Home = require('../models/home.model')
 const home = new Home()
 
 const Session = require('./session.controller')

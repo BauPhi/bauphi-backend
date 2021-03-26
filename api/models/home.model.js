@@ -1,4 +1,4 @@
-const knex = require('../../dbfunctions/dbControls');
+const knex = require('../dbfunctions/dbControls');
 class Home {
 
     async getHomes(reqBody, params, user_id){

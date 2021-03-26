@@ -4,7 +4,7 @@ const announcementRouter = express.Router()
 const Session = require('./session.controller')
 const session = new Session()
 
-const Announcement = require('../sample/models/announcement.model')
+const Announcement = require('../models/announcement.model')
 const announcement = new Announcement()
 
 announcementRouter.get('/', async (req, res) => {

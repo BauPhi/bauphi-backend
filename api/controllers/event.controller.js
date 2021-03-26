@@ -4,7 +4,7 @@ const eventRouter = express.Router()
 const Session = require('./session.controller')
 const session = new Session()
 
-const Event = require('../sample/models/event.model')
+const Event = require('../models/event.model')
 const event = new Event()
 
 eventRouter.get('/', async (req, res) => {

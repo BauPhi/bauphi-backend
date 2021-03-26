@@ -4,12 +4,6 @@ const homeRouter = express.Router()
 const Validation = require('./validation.controller')
 const validation = new Validation()
 
-const Session = require('./session.controller')
-const session = new Session()
-
-const Home = require('../sample/models/home.model')
-const home = new Home()
-
 homeRouter.get('/', async (req, res) => {
     const url = req.baseUrl.substring();
     const user_id = url.substring(11, url.lastIndexOf('homes')-1)
