@@ -4,6 +4,9 @@ const user = new User()
 const Home = require('../models/home.model')
 const home = new Home()
 
+const Event = require('../models/event.model')
+const event = new Event()
+
 const Session = require('./session.controller')
 const session = new Session()
 
@@ -80,7 +83,31 @@ class Validation {
                 }
             },
             "event": {
-
+                "getEvents": {
+                    mustFields: [],
+                    mayFields: [],
+                    sessionControl: true
+                },
+                "getEvent": {
+                    mustFields: [],
+                    mayFields: [],
+                    sessionControl: true
+                },
+                "addEvent": {
+                    mustFields: ["start_time", "end_time", "type", "title", "description"],
+                    mayFields: ["is_emergency", "country", "state", "city", "neighbourhood", "latitude", "longitude", "currency", "amount"],
+                    sessionControl: true
+                },
+                "deleteEvent": {
+                    mustFields: [],
+                    mayFields: [],
+                    sessionControl: true
+                },
+                "updateEvent": {
+                    mustFields: [],
+                    mayFields: ["start_time", "end_time", "type", "title", "description", "is_emergency", "country", "state", "city", "neighbourhood", "latitude", "longitude", "currency", "amount"],
+                    sessionControl: true
+                }
             },
             "announcement": {
 
@@ -99,10 +126,8 @@ class Validation {
         if(this.requests[controller][reqName].sessionControl){
             var sk = req.get("session_key")
             sessionCheck = session.check(sk, req.params.id)
-            if(!sessionCheck){
-                sessionCheck = false
-                errMsg = "session key is wrong"
-            }
+            if(!sessionCheck)
+                return session.sendErrorMessage()
         }
         
 
@@ -165,6 +190,16 @@ class Validation {
                 return home.deleteHome(reqBody, params, parentId);
             case "updateHome": 
                 return home.updateHome(reqBody, params, parentId);
+            case "getEvents": 
+                return event.getEvents(reqBody, params, parentId);
+            case "getEvent": 
+                return event.getEvent(reqBody, params, parentId);
+            case "addEvent": 
+                return event.addEvent(reqBody, params, parentId);
+            case "deleteEvent": 
+                return event.deleteEvent(reqBody, params, parentId);
+            case "updateEvent": 
+                return event.updateEvent(reqBody, params, parentId);
             default:
                 return {status: "validation failure"}
         }

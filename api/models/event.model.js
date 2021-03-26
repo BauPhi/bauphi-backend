@@ -1,105 +1,48 @@
 const knex = require('../dbfunctions/dbControls');
 class Event {
-    constructor(){
-        this.dbEvents = [
-            {
-                event_id: "1",
-                event_starter: "2",
-                event_start: "2021-07-09::16-00",
-                event_end: "2021-07-09::19-00",
-                title: "Deprem Buluşma",
-                description: "Deprem bölgesinde olanlar erzak ve sağlık hizmeti için acil toplanma alanına gelsinler!",
-                type: "Meeting",
-                additionalData: {
-                    isEmergency: true,
-                    country: "Turkey",
-                    state: "Diyarbakır",
-                    city: "Bağlar",
-                    neighbourhood: "Bağcılar Mah. X Cad. Y Sok. No: 2/4",
-                    latitude: "37.927193",
-                    longitude: "40.184143"
-                }
-            },
-            {
-                event_id: "2",
-                event_starter: "1",
-                event_start: "2021-03-20::12-00",
-                event_end: "2021-03-20::14-00",
-                title: "Sel Afetzedeleri İçin Kermes",
-                description: "Siz de afetzedeler için düzenlediğimiz kermese katılabilirsiniz.",
-                type: "Donation/Supply",
-                additionalData: {
-                    country: "Turkey",
-                    state: "Diyarbakır",
-                    city: "Bağlar",
-                    neighbourhood: "Bağcılar Mah. X Cad. Y Sok. No: 2/4",
-                    latitude: "37.927193",
-                    longitude: "40.184143"
-                }
-            },
-            {
-                event_id: "3",
-                event_starter: "3",
-                event_start: "2021-10-30::12-00",
-                event_end: "2021-12-30::12-00",
-                title: "Elazığ Deprem Mağdurlarına Bağış",
-                description: "Elazığ depreminde evini, sağlını kaybeden vatandaşlarımız için sen de 10 TL gönder. Link: www.samplelink.com",
-                type: "Donation/Money",
-                additionalData: {
-                    currency: "TL",
-                    amount: "10"
-                }
-            },
-            {
-                event_id: "4",
-                event_starter: "3",
-                event_start: "2021-10-09::00-00",
-                event_end: "2021-12-09::00-00",
-                title: "Belediye Yemek Alanı",
-                description: "Günlük yemek ihtiyacınızı belediyemizin yemek hizmetlerinden karşılayabilirsiniz.",
-                type: "Meeting",
-                additionalData: {
-                    isEmergency: false,
-                    country: "Turkey",
-                    state: "Elazığ",
-                    city: "Merkez",
-                    neighbourhood: "Elazığ X Cad. Y Sok. No: 2/4",
-                    latitude: "38.675406",
-                    longitude: "39.222979"
-                }
-            }
-        ]
-    }
-
+    
     async getEvents(reqBody, params, user_id){
 
-        return knex('events').where('event_starter', user_id).select()
-        .then(function(events) {
-            let sampleGetEventsResponse = {}
-            if(events && events.length !== 0){
-                sampleGetEventsResponse = {
-                    status: "SUCCESS",
-                    message: "all events of user are listed",
-                    user_id: user_id,
-                    events: events,
-                }
-            }
-            else{
-                sampleGetEventsResponse = {
-                    status: "FAILURE",
-                    message: "events are not found",
-                }
-            }
-    
-            return sampleGetEventsResponse;
+        var meetings = await knex('meeting').where('event_starter', user_id).select()
+        .then(function(meetings) {
+            return meetings;
         }).catch((err) => {
-            sampleGetUserResponse = {
+            console.log(err)
+            return {
                 status: "FAILURE",
                 message: "db error"
             }
+        });
+
+        var moneyDonations = await knex('money').where('event_starter', user_id).select()
+        .then(function(dons) {
+            return dons;
+        }).catch((err) => {
             console.log(err)
-            return sampleGetUserResponse;
-        });       
+            return {
+                status: "FAILURE",
+                message: "db error"
+            }
+        });
+
+        var supplyDonations = await knex('supply').where('event_starter', user_id).select()
+        .then(function(dons) {
+            return dons;
+        }).catch((err) => {
+            console.log(err)
+            return {
+                status: "FAILURE",
+                message: "db error"
+            }
+        });
+
+        var events = meetings.concat(moneyDonations, supplyDonations)
+
+        return {
+            status: "SUCCESS",
+            message: "all events of user is displayed",
+            events: events
+        }
     }
 
 
@@ -108,94 +51,130 @@ class Event {
         return knex('events').where({'event_starter': user_id, 'event_id': params.id}).select()
         .then(function(event) {
             let sampleGetEventResponse = {}
-            if(event){
-                sampleGetEventResponse = {
-                    status: "SUCCESS",
-                    message: "event is found",
-                    user_id: user_id,
-                    event: event,
+            if(event.length !== 0){
+
+                var tablename = ""
+                if(event[0].type === "Meeting"){
+                    tablename = "meeting"
                 }
+                else if(event[0].type === "Donation/Money"){
+                    tablename = "money"
+                }
+                else if(event[0].type === "Donation/Supply"){
+                    tablename = "supply"
+                }
+                else{
+                    return {
+                        status: "FAILURE",
+                        message: "unknown error"
+                    }
+                }
+
+                return knex(tablename).where({'event_starter': user_id, 'event_id': params.id}).select()
+                .then((event) => {
+                    return {
+                        status: "SUCCESS",
+                        message: "event is found",
+                        event: event[0],
+                    }
+                })
+                .catch((err) => {
+                    console.log(err)
+                    return {
+                        status: "FAILURE",
+                        message: "db error"
+                    }
+                })
             }
             else{
-                sampleGetEventResponse = {
+                return {
                     status: "FAILURE",
                     message: "event is not found",
                 }
             }
-
-            return sampleGetEventResponse
         }).catch((err) => {
-            sampleGetUserResponse = {
+            console.log(err)
+            return {
                 status: "FAILURE",
                 message: "db error"
             }
-            console.log(err)
-            return sampleGetUserResponse;
         });
     }
 
     async addEvent(reqBody, params, user_id){
 
-        //check fields
-        const fields = Object.keys(reqBody)
-        const fieldCheck = fields.includes("event_start" && "event_end" && "title" && "description" && "type") && fields.length < 6
-        reqBody['event_starter'] = user_id;
-        let sampleAddEventResponse = {}
-        if(fieldCheck){
-            return knex('events').insert(reqBody)
-            .then(function(event) {
-                sampleAddEventResponse = {
-                    status: "SUCCESS",
-                    message: "new event is added",
-                    user_id: user_id,
-                    event: {
-                        event_id: Math.floor(Math.random()*100 +1).toString(),
-                        event_starter: user_id,
-                        event_start: reqBody.event_start,
-                        event_end: reqBody.event_end,
-                        title: reqBody.title,
-                        description: reqBody.description,
-                        type: reqBody.type,
-                        additionalData: {}
-                    }
-                }
-                
-                return sampleAddEventResponse;
-            }).catch((err) => {
-                sampleGetUserResponse = {
-                    status: "FAILURE",
-                    message: "db error"
-                }
-                console.log(err)
-                return sampleGetUserResponse;
-            });   
-        }
-        else{
-            sampleAddEventResponse = {
+        const User = require('../models/user.model')
+        const user = new User()
+
+        var userData = await user.getUser({}, {id: user_id})
+
+        if(userData.status === "FAILURE"){
+            return {
                 status: "FAILURE",
-                message: "request body fields are not true"
+                message: "no such user found"
             }
         }
 
-        return sampleAddEventResponse;
-    }
+        var tablename = ""
+        if(reqBody.type === "Meeting")
+            tablename = "meeting"
+        else if(reqBody.type === "Donation/Money")
+            tablename = "money"
+        else if(reqBody.type === "Donation/Supply")
+            tablename = "supply"
+        else{
+            return {
+                status: "FAILURE",
+                message: "event type is undefined"
+            }
+        }
 
+        reqBody['event_starter'] = user_id;
+        
+        return knex(tablename).insert(reqBody).returning('event_id')
+        .then((id) => {
+            return {
+                status: "SUCCESS",
+                message: "meeting event is added",
+                event: {
+                    event_id: "" + id[0],
+                    event_starter: user_id,
+                    start_time: reqBody.start_time,
+                    end_time: reqBody.end_time,
+                    title: reqBody.title,
+                    description: reqBody.description,
+                    type: reqBody.type,
+                    isEmergency: reqBody.isEmergency,
+                    country: reqBody.isEmergency,
+                    state: reqBody.state,
+                    city: reqBody.city,
+                    neighbourhood: reqBody.neighbourhood,
+                    latitude: reqBody.latitude,
+                    longitude: reqBody.longitude,
+                    currency: reqBody.currency,
+                    amount: reqBody.amount
+                }
+            }
+        })
+        .catch((err) => {
+            console.log(err)
+            return {
+                status: "FAILURE",
+                message: "db error when adding meeting event"
+            }
+        })
+        
+        
+    }
 
     async deleteEvent(reqBody, params, user_id){
 
-        // get events of user
-        /*const event = this.dbEvents.find(x => {
-            if(x.event_id === params.id && x.event_starter === user_id){
-                return true;
-            }
-        });*/
-        var event =  await this.getEvent(reqBody, params, user_id);
+        var event = await this.getEvent(reqBody, params, user_id);
 
         return knex('events').where({'event_starter': user_id, 'event_id':params.id}).del()
         .then(function(num) {
-            let sampleDeleteEventResponse = {}
             if(num > 0){
-                sampleDeleteEventResponse = {
+                return{
                     status: "SUCCESS",
                     message: "event is deleted",
                     user_id: user_id,
@@ -203,20 +182,18 @@ class Event {
                 }
             }
             else{
-                sampleDeleteEventResponse = {
+                return {
                     status: "FAILURE",
                     message: "event is not found",
                 }
             }
 
-            return sampleDeleteEventResponse;
         }).catch((err) => {
-            sampleGetUserResponse = {
+            console.log(err)
+            return {
                 status: "FAILURE",
                 message: "db error"
             }
-            console.log(err)
-            return sampleGetUserResponse;
         });
     }
 
@@ -224,58 +201,52 @@ class Event {
 
     async updateEvent(reqBody, params, user_id){
 
-        //check fields
-        const fields = Object.keys(reqBody)
-        const fieldCheck = fields.length < 13
+        var event = await this.getEvent(reqBody, params, user_id);
 
-        let sampleUpdateEventResponse = {}
-        if(fieldCheck){
-            knex('events').where({'event_starter': user_id, 'event_id':params.id}).update(reqBody)
-            .then(function(event){
-                sampleUpdateEventResponse = {
-                    status: "SUCCESS",
-                    message: "event is updated",
-                    user_id: user_id,
-                    event: {
-                        event_id: params.id,
-                        event_starter: user_id,
-                        event_start: reqBody.event_start,
-                        event_end: reqBody.event_end,
-                        title: reqBody.title,
-                        description: reqBody.description,
-                        type: reqBody.type,
-                        additionalData: {
-                            isEmergency: reqBody.isEmergency,
-                            country: reqBody.country,
-                            state: reqBody.state,
-                            city: reqBody.city,
-                            neighbourhood: reqBody.neighbourhood,
-                            latitude: reqBody.latitude,
-                            longitude: reqBody.longitude,
-                            currency: reqBody.currency,
-                            amount: reqBody.amount
-                        }
-                    }
-                }
-
-                return sampleUpdateEventResponse;
-            }).catch((err) => {
-                sampleGetUserResponse = {
-                    status: "FAILURE",
-                    message: "db error"
-                }
-                console.log(err)
-                return sampleGetUserResponse;
-            });   
+        var tablename = ""
+        if(event.event.type === "Meeting"){
+            tablename = "meeting"
         }
-        else{
-            sampleUpdateEventResponse = {
-                status: "FAILURE",
-                message: "request body fields are not true"
+        else if(event.event.type === "Donation/Money"){
+            tablename = "money"
+        }
+        else if(event.event.type === "Donation/Supply"){
+            tablename = "supply"
+        }
+        
+        return knex(tablename).where({'event_starter': user_id, 'event_id':params.id}).update(reqBody)
+        .then(function(event){
+            return {
+                status: "SUCCESS",
+                message: "event is updated",
+                user_id: user_id,
+                event: {
+                    event_id: params.id,
+                    event_starter: user_id,
+                    event_start: reqBody.event_start,
+                    event_end: reqBody.event_end,
+                    title: reqBody.title,
+                    description: reqBody.description,
+                    type: reqBody.type,
+                    isEmergency: reqBody.isEmergency,
+                    country: reqBody.country,
+                    state: reqBody.state,
+                    city: reqBody.city,
+                    neighbourhood: reqBody.neighbourhood,
+                    latitude: reqBody.latitude,
+                    longitude: reqBody.longitude,
+                    currency: reqBody.currency,
+                    amount: reqBody.amount
+                }
             }
-        }
 
-        return sampleUpdateEventResponse;
+        }).catch((err) => {
+            console.log(err)
+            return {
+                status: "FAILURE",
+                message: "db error"
+            }
+        });   
 
     }
 }
