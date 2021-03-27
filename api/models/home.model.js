@@ -224,6 +224,7 @@ class Home {
                 }
             }
         }).catch(err => {
+            console.log(err)
             return {
                 status: "FAILURE",
                 message: "db error"

@@ -7,6 +7,9 @@ const home = new Home()
 const Event = require('../models/event.model')
 const event = new Event()
 
+const Announcement = require('../models/announcement.model')
+const announcement = new Announcement()
+
 const Session = require('./session.controller')
 const session = new Session()
 
@@ -110,7 +113,31 @@ class Validation {
                 }
             },
             "announcement": {
-
+                "getAnnouncements": {
+                    mustFields: [],
+                    mayFields: [],
+                    sessionControl: true
+                },
+                "getAnnouncement": {
+                    mustFields: [],
+                    mayFields: [],
+                    sessionControl: true
+                },
+                "addAnnouncement": {
+                    mustFields: ["phone", "title", "description", "isHuman"],
+                    mayFields: ["image"],
+                    sessionControl: true
+                },
+                "deleteAnnouncement": {
+                    mustFields: [],
+                    mayFields: [],
+                    sessionControl: true
+                },
+                "updateAnnouncement": {
+                    mustFields: [],
+                    mayFields: ["image", "phone", "title", "description", "isHuman"],
+                    sessionControl: true
+                }
             }
             
         }
@@ -200,6 +227,16 @@ class Validation {
                 return event.deleteEvent(reqBody, params, parentId);
             case "updateEvent": 
                 return event.updateEvent(reqBody, params, parentId);
+            case "getAnnouncements": 
+                return announcement.getAnnouncements(reqBody, params, parentId);
+            case "getAnnouncement": 
+                return announcement.getAnnouncement(reqBody, params, parentId);
+            case "addAnnouncement": 
+                return announcement.addAnnouncement(reqBody, params, parentId);
+            case "deleteAnnouncement": 
+                return announcement.deleteAnnouncement(reqBody, params, parentId);
+            case "updateAnnouncement": 
+                return announcement.updateAnnouncement(reqBody, params, parentId);
             default:
                 return {status: "validation failure"}
         }
