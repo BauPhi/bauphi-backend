@@ -50,7 +50,6 @@ class Event {
 
         return knex('events').where({'event_starter': user_id, 'event_id': params.id}).select()
         .then(function(event) {
-            let sampleGetEventResponse = {}
             if(event.length !== 0){
 
                 var tablename = ""

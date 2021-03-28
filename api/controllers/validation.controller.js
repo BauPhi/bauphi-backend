@@ -152,7 +152,7 @@ class Validation {
         var sessionCheck = true
         if(this.requests[controller][reqName].sessionControl){
             var sk = req.get("session_key")
-            sessionCheck = session.check(sk, req.params.id)
+            sessionCheck = await session.check(sk, parentId)
             if(!sessionCheck)
                 return session.sendErrorMessage()
         }

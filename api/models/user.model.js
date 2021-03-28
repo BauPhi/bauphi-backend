@@ -1,6 +1,6 @@
 const knex = require('../dbfunctions/dbControls');
-class User {
 
+class User {
     
     hideFields(key,value){
         if (key=="password") return undefined;
@@ -11,36 +11,49 @@ class User {
 
         let user = "";
         let isValid = false;
-        return await knex('users').select({'email':reqBody.email})
-        .then(function(user) {
-            isValid = (user[0].password === reqBody.password);
+        return await knex('users').where({'email':reqBody.email}).select()
+        .then(async function(user) {
+
+            if(user && user.length > 0){
+                isValid = (user[0].password === reqBody.password);
     
-            if(isValid){
-                const safeUser = user;
-                var start_time = new Date(new Date().getTime())
-                var expire_time = new Date(new Date().getTime() + (12*60*60*1000))
-    
-                sampleLoginResponse = {
-                    status: "SUCCESS",
-                    message: "login is successful",
-                    user: safeUser,
-                    session: {
-                        start_time: start_time.toString(),
-                        expire_time: expire_time.toString(),
-                        session_key: "admin"
+                if(isValid){
+                    const safeUser = user[0];
+
+                    const Session = require('../controllers/session.controller')
+                    const session = new Session()
+        
+                    return {
+                        status: "SUCCESS",
+                        message: "login is successful",
+                        user: safeUser,
+                        session: await session.createSession(user[0].user_id)
                     }
                 }
+                else{
+                    return {
+                        status: "SUCCESS",
+                        message: "login has failed"
+                    }
+                }
+        
+                
             }
             else{
-                sampleLoginResponse = {
-                    status: "SUCCESS",
-                    message: "login has failed"
+                return {
+                    status: "FAILURE",
+                    message: "login error"
                 }
             }
-    
-            return sampleLoginResponse;
-        }
-        )
+            
+        })
+        .catch((err) => {
+            console.log(err)
+            return {
+                status: "FAILURE",
+                message: "db error"
+            }
+        })
         // check if login request is valid
         
     }
