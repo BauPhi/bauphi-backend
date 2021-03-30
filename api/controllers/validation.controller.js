@@ -10,6 +10,9 @@ const event = new Event()
 const Announcement = require('../models/announcement.model')
 const announcement = new Announcement()
 
+const Request = require('../models/request.model')
+const request = new Request()
+
 const Session = require('./session.controller')
 const session = new Session()
 
@@ -138,6 +141,33 @@ class Validation {
                     mayFields: ["image", "phone", "title", "description", "isHuman"],
                     sessionControl: true
                 }
+            },
+            "request": {
+                "sendRequest": {
+                    mustFields: ["home", "description", "home_owner"],
+                    mayFields: [],
+                    sessionControl: true
+                },
+                "sentList": {
+                    mustFields: [],
+                    mayFields: [],
+                    sessionControl: true
+                },
+                "deleteRequest": {
+                    mustFields: [],
+                    mayFields: [],
+                    sessionControl: true
+                },
+                "receivedList": {
+                    mustFields: [],
+                    mayFields: [],
+                    sessionControl: true
+                },
+                "rejectRequest": {
+                    mustFields: ["victim", "home"],
+                    mayFields: [],
+                    sessionControl: true
+                },
             }
             
         }
@@ -237,6 +267,16 @@ class Validation {
                 return announcement.deleteAnnouncement(reqBody, params, parentId);
             case "updateAnnouncement": 
                 return announcement.updateAnnouncement(reqBody, params, parentId);
+            case "sendRequest": 
+                return request.send(reqBody, params, parentId);
+            case "sentList": 
+                return request.sentList(reqBody, params, parentId);
+            case "deleteRequest": 
+                return request.delete(reqBody, params, parentId); 
+            case "receivedList": 
+                return request.receivedList(reqBody, params, parentId); 
+            case "rejectRequest": 
+                return request.rejectRequest(reqBody, params, parentId); 
             default:
                 return {status: "validation failure"}
         }
