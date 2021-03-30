@@ -5,7 +5,7 @@ exports.up = function(knex) {
         table.dropColumn('house')
         table.integer('victim').references('user_id').inTable('users')
         table.integer('home_owner').references('user_id').inTable('users')
-        table.string('home')
+        table.integer('home').references('home_id').inTable('home')
     })
 };
 
