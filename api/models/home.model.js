@@ -236,10 +236,6 @@ class Home {
 
         const fetch = require("node-fetch")
 
-        //check fields
-        const fields = Object.keys(reqBody)
-        const fieldCheck = fields.includes("latitude" && "longitude") && fields.length < 3
-
         let apiResponse = {}
         await fetch('https://nominatim.openstreetmap.org/reverse?lat=' + reqBody.latitude + '&lon=' + reqBody.longitude + '&format=json')
         .then(res => res.json())
@@ -248,15 +244,15 @@ class Home {
             const apiFieldCheck = apiFields.includes("address")
             if(apiFieldCheck){
                 const addressFields = Object.keys(json.address)
-                const addressFieldCheck = addressFields.includes("country" && "province" && "county")
+                const addressFieldCheck = addressFields.includes("country" && "province")
                 if(addressFieldCheck){
                     apiResponse = {
                         api_status: "SUCCESS",
                         api_message: "address is returned",
-                        home_name: json.address.county + "/" + json.address.province,
+                        home_name: json.address.suburb + "/" + json.address.province,
                         country: json.address.country,
                         state: json.address.province,
-                        city: json.address.county,
+                        city: json.address.county || json.address.town,
                         neighbourhood: json.address.suburb || json.address.village
                     }
                 }
@@ -282,25 +278,12 @@ class Home {
             }
         });
 
-
-        let sampleAutoDefineResponse = {}
-        if(fieldCheck){
-            sampleAutoDefineResponse = {
-                status: "SUCCESS",
-                message: "location api response is returned",
-                api_response: apiResponse
-            }
+        return {
+            status: "SUCCESS",
+            message: "location api response is returned",
+            api_response: apiResponse
         }
-        else{
-            sampleAutoDefineResponse = {
-                status: "FAILURE",
-                message: "request body fields are not true"
-            }
-        }
-
-        return sampleAutoDefineResponse;
     }
-
 }
 
 module.exports = Home;
