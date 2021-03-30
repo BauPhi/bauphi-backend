@@ -86,7 +86,7 @@ class Request {
             if(requests && requests.length !== 0){
                 return {
                     status: "SUCCESS",
-                    message: "sent home request list is returned",
+                    message: "received home request list is returned",
                     requests: requests
                 }
             }
@@ -114,6 +114,33 @@ class Request {
                 return {
                     status: "SUCCESS",
                     message: "request is rejected",
+                    request: requests[0]
+                }
+            }
+            else{
+                return {
+                    status: "FAILURE",
+                    message: "no such request is found"
+                }
+            }
+            
+        })
+        .catch((err) => {
+            return {
+                status: "FAILURE",
+                message: "db error"
+            }
+        })
+    }
+
+
+    async acceptRequest(reqBody, params, user_id){
+        return knex('request').where({victim: reqBody.victim, home: reqBody.home}).update({results: "Accepted"}).returning('*')
+        .then((requests) => {
+            if(requests && requests.length > 0){
+                return {
+                    status: "SUCCESS",
+                    message: "request is accepted",
                     request: requests[0]
                 }
             }

@@ -168,6 +168,11 @@ class Validation {
                     mayFields: [],
                     sessionControl: true
                 },
+                "acceptRequest": {
+                    mustFields: ["victim", "home"],
+                    mayFields: [],
+                    sessionControl: true
+                },
             }
             
         }
@@ -277,6 +282,8 @@ class Validation {
                 return request.receivedList(reqBody, params, parentId); 
             case "rejectRequest": 
                 return request.rejectRequest(reqBody, params, parentId); 
+            case "acceptRequest": 
+                return request.acceptRequest(reqBody, params, parentId); 
             default:
                 return {status: "validation failure"}
         }

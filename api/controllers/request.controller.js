@@ -35,6 +35,12 @@ requestRouter.patch('/reject', async (req, res) => {
 })
 
 
+requestRouter.patch('/accept', async (req, res) => {
+    const url = req.baseUrl.substring();
+    const user_id = url.substring(11, url.lastIndexOf('requests')-1)
+    res.status(200).json(await validation.validateRequest(req, "request", "acceptRequest", user_id))
+})
+
 
 
 
