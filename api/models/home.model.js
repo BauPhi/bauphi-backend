@@ -181,7 +181,7 @@ class Home {
         return await knex('home').select().where('isVisible', true)
         .then(function(homes) {
             
-            var dist_list = {};
+            var dist_list = [];
 
             var i;
             for(i = 0; i < homes.length; i++) {
@@ -196,7 +196,7 @@ class Home {
                 var dLon = x2.toRad();
 
                 var a = Math.sin(dLat/2) * Math.sin(dLat /2) +
-                        Math.cos(lat1.toRad()) * Math.cos(reqBody.latitude.toRad) *
+                        Math.cos(lat1.toRad()) * Math.cos(reqBody.latitude.toRad()) *
                         Math.sin(dLon/2) * Math.sin(dLon/2);
                 var c = 2 * Math.atan(Math.sqrt(a), Math.sqrt(1-a));
                 var d = R * c;
