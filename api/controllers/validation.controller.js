@@ -10,8 +10,8 @@ const event = new Event()
 const Announcement = require('../models/announcement.model')
 const announcement = new Announcement()
 
-const Request = require('../models/request.model')
-const request = new Request()
+const Interaction = require('../models/interaction.model')
+const interaction = new Interaction()
 
 const Session = require('./session.controller')
 const session = new Session()
@@ -142,7 +142,7 @@ class Validation {
                     sessionControl: true
                 }
             },
-            "request": {
+            "interaction": {
                 "sendRequest": {
                     mustFields: ["home", "description", "home_owner"],
                     mayFields: [],
@@ -273,17 +273,17 @@ class Validation {
             case "updateAnnouncement": 
                 return announcement.updateAnnouncement(reqBody, params, parentId);
             case "sendRequest": 
-                return request.send(reqBody, params, parentId);
+                return interaction.send(reqBody, params, parentId);
             case "sentList": 
-                return request.sentList(reqBody, params, parentId);
+                return interaction.sentList(reqBody, params, parentId);
             case "deleteRequest": 
-                return request.delete(reqBody, params, parentId); 
+                return interaction.delete(reqBody, params, parentId); 
             case "receivedList": 
-                return request.receivedList(reqBody, params, parentId); 
+                return interaction.receivedList(reqBody, params, parentId); 
             case "rejectRequest": 
-                return request.rejectRequest(reqBody, params, parentId); 
+                return interaction.rejectRequest(reqBody, params, parentId); 
             case "acceptRequest": 
-                return request.acceptRequest(reqBody, params, parentId); 
+                return interaction.acceptRequest(reqBody, params, parentId); 
             default:
                 return {status: "validation failure"}
         }

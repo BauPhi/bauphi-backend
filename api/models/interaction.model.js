@@ -12,7 +12,7 @@ class Request {
             return {
                 status: "SUCCESS",
                 message: "new home request is sent",
-                request: newRequest
+                request: newRequest[0]
             }
         })
         .catch((err) => {

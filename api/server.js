@@ -4,7 +4,7 @@ const userRouter = require('./controllers/user.controller')
 const homeRouter = require('./controllers/home.controller')
 const eventRouter = require('./controllers/event.controller')
 const announcementRouter = require('./controllers/announcement.controller')
-const requestRouter = require('./controllers/request.controller')
+const interactionRouter = require('./controllers/interaction.controller')
 
 const server = express();
 server.use(express.json())
@@ -17,7 +17,7 @@ server.use('/api/users', userRouter)
 server.use('/api/users/:userid/homes', homeRouter)
 server.use('/api/users/:userid/events', eventRouter)
 server.use('/api/users/:userid/announcements', announcementRouter)
-server.use('/api/users/:userid/requests', requestRouter)
+server.use('/api/users/:userid/interactions', interactionRouter)
 
 
 module.exports = server;
