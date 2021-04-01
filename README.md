@@ -3,8 +3,11 @@
 ## Production
 
 ### Heroku
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/ad97c2601dc458057390)
 
 You can run the app from [here](https://bauphi-api.herokuapp.com/).
+
+- If you use Postman collection, change requests' URL domain from "localhost:5000" to "bauphi-api.herokuapp".
 
 ## Development
 
@@ -21,7 +24,7 @@ Use `npm install` to install dependencies.
 
 
 ### Setup
-Go to /bauphi-backend/api/dbfunctions and init postgres database via `npx knex migrate:latest`
+Go to `/bauphi-backend/api/dbfunctions` and init postgres database via `npx knex migrate:latest`
 
 Use `npm start` or `yarn server` to start the server in http://localhost:5000/.
 
