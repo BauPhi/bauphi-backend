@@ -3,7 +3,7 @@
 ## Production
 
 ### Heroku
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/ad97c2601dc458057390)
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://www.getpostman.com/collections/a6e1f3576a7e85ac635b)
 
 You can run the app from [here](https://bauphi-api.herokuapp.com/).
 
