@@ -1,6 +1,14 @@
 # bauphi-backend
 
-## Dependencies
+## Production
+
+### Heroku
+
+You can run the app from [here](https://bauphi-api.herokuapp.com/).
+
+## Development
+
+### Dependencies
 
 Use `npm install` to install dependencies.
 
@@ -12,11 +20,11 @@ Use `npm install` to install dependencies.
 - Node-Fetch: ^2.6.1
 
 
-## Setup
+### Setup
 Go to /bauphi-backend/api/dbfunctions and init postgres database via `npx knex migrate:latest`
 
 Use `npm start` or `yarn server` to start the server in http://localhost:5000/.
 
-## Endpoints
+### Endpoints
 
 Endpoints will be documented [here](https://github.com/BauPhi/bauphi-backend/issues/3#issuecomment-782308406).
