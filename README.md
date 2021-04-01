@@ -7,7 +7,7 @@
 
 You can run the app from [here](https://bauphi-api.herokuapp.com/).
 
-- If you use Postman collection, change requests' URL domain from "localhost:5000" to "bauphi-api.herokuapp".
+- If you use Postman collection, change requests' URL domain from "localhost:5000" to "bauphi-api.herokuapp.com".
 
 ## Development
 
