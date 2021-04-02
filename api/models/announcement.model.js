@@ -26,7 +26,7 @@ class Announcement {
             console.log(err)
             return {
                 status: "FAILURE",
-                message: "db error"
+                message: err.detail
             }
         });     
     }
@@ -55,7 +55,7 @@ class Announcement {
             console.log(err)
             return {
                 status: "FAILURE",
-                message: "db error"
+                message: err.detail
             }
         });    
     }
@@ -86,7 +86,7 @@ class Announcement {
             console.log(err)
             return {
                 status: "FAILURE",
-                message: "db error"
+                message: err.detail
             }
         });
         
@@ -116,7 +116,7 @@ class Announcement {
             console.log(err)
             return {
                 status: "FAILURE",
-                message: "db error"
+                message: err.detail
             }
         });
     }
@@ -147,7 +147,7 @@ class Announcement {
                     else{
                         return {
                             status: "FAILURE",
-                            message: "db error",
+                            message: err.detail,
                             ann: ann
                         }
                     }
@@ -170,7 +170,7 @@ class Announcement {
             console.log(err)
             return {
                 status: "FAILURE",
-                message: "db error"
+                message: err.detail
             }
         });
         

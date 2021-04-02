@@ -10,12 +10,12 @@ eventRouter.get('/', async (req, res) => {
     res.status(200).json(await validation.validateRequest(req, "event", "getEvents", user_id))
 })
 
+
 eventRouter.get('/:id', async (req, res) => {
     const url = req.baseUrl.substring();
     const user_id = url.substring(11, url.lastIndexOf('events')-1)
     res.status(200).json(await validation.validateRequest(req, "event", "getEvent", user_id))
 })
-
 
 eventRouter.post('/', async (req, res) => {
     const url = req.baseUrl.substring();

@@ -51,7 +51,7 @@ class User {
             console.log(err)
             return {
                 status: "FAILURE",
-                message: "db error"
+                message: err.detail
             }
         })
         // check if login request is valid
@@ -75,7 +75,7 @@ class User {
     }).catch((err) => {
         sampleGetUserResponse = {
             status: "FAILURE",
-            message: "db error"
+            message: err.detail
         }
         console.log(err)
         return sampleGetUserResponse;
@@ -105,7 +105,7 @@ class User {
         }).catch((err) => {
             sampleGetUserResponse = {
                 status: "FAILURE",
-                message: "db error"
+                message: err.detail
             }
             console.log(err)
             return sampleGetUserResponse;
@@ -138,7 +138,7 @@ class User {
             .catch((err) => {
                 sampleAddUserResponse = {
                     status: "FAILURE",
-                    message: "db error"
+                    message: err.detail
                 }
                 console.log(err)
                 return sampleAddUserResponse;
@@ -181,7 +181,7 @@ class User {
                 console.log(err)
                 return {
                     status: "FAILURE",
-                    message: "db error"
+                    message: err.detail
                 }
             });
         })

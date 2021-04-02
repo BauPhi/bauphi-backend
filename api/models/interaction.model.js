@@ -160,6 +160,90 @@ class Request {
         })
     }
 
+
+    async joinEvent(reqBody, params, user_id){
+
+        return knex('users').select().where({user_id: user_id}).returning('*')
+        .then((user) => {
+            if(user.length > 0){
+                return knex('events').select().where({event_id: reqBody.event}).returning('*')
+                .then((records) => {
+                    if(records.length > 0){
+                        reqBody['attendee'] = user_id;
+                        return knex('participation').insert(reqBody).returning('*')
+                        .then((newParticipation) => {
+                            return {
+                                status: "SUCCESS",
+                                message: "new participation is added",
+                                participation: newParticipation[0]
+                            }
+                        })
+                        .catch((err) => {
+                            console.log(err)
+                            return {
+                                status: "FAILURE",
+                                message: err.detail
+                            }
+                        })
+                    }
+                    else{
+                        return {
+                            status: "FAILURE",
+                            message: "no such event is found"
+                        }
+                    }
+                })
+                .catch((err) => {
+                    console.log(err)
+                    return {
+                        status: "FAILURE",
+                        message: "db error"
+                    }
+                })
+            }
+            else{
+                return {
+                    status: "SUCCESS",
+                    message: "user is not found"
+                }
+            }
+        })
+        .catch((err) => {
+            console.log(err)
+            return {
+                status: "FAILURE",
+                message: "db error"
+            }
+        })
+    }
+
+
+    async cancelParticipation(reqBody, params, user_id){
+        return knex('participation').where({attendee: user_id, event: params.event_id}).del().returning('*')
+        .then((participation) => {
+            if(participation.length > 0){
+                return {
+                    status: "SUCCESS",
+                    message: "participation is cancelled",
+                    participation: participation[0]
+                }
+            }
+            else{
+                return {
+                    status: "FAILURE",
+                    message: "participation is not found"
+                }
+            }
+        })
+        .catch((err) => {
+            console.log(err)
+            return {
+                status: "FAILURE",
+                message: "db error"
+            }
+        })
+    }
+
 }
 
 module.exports = Request;

@@ -13,6 +13,9 @@ const announcement = new Announcement()
 const Interaction = require('../models/interaction.model')
 const interaction = new Interaction()
 
+const Generic = require('../models/generic.model')
+const generic = new Generic()
+
 const Session = require('./session.controller')
 const session = new Session()
 
@@ -62,11 +65,6 @@ class Validation {
                     mayFields: [],
                     sessionControl: true
                 },
-                "getCloseLocation": {
-                    mustFields: ["latitude", "longitude"],
-                    mayFields: [],
-                    sessionControl: false
-                },
                 "addHome": {
                     mustFields: ["home_owner", "home_name", "isVisible", "country", "state", "city", "neighbourhood", "latitude", "longitude"],
                     mayFields: [],
@@ -82,11 +80,6 @@ class Validation {
                     mayFields: ["home_owner", "home_name", "isVisible", "country", "state", "city", "neighbourhood", "latitude", "longitude"],
                     sessionControl: true
                 },
-                "autoLocation": {
-                    mustFields: ["latitude", "longitude"],
-                    mayFields: [],
-                    sessionControl: true
-                }
             },
             "event": {
                 "getEvents": {
@@ -173,8 +166,34 @@ class Validation {
                     mayFields: [],
                     sessionControl: true
                 },
-            }
-            
+                "joinEvent": {
+                    mustFields: ["event"],
+                    mayFields: [],
+                    sessionControl: true
+                },
+                "cancelParticipation": {
+                    mustFields: [],
+                    mayFields: [],
+                    sessionControl: true
+                },
+            },
+            "generic": {
+                "listParticipants": {
+                    mustFields: [],
+                    mayFields: [],
+                    sessionControl: false
+                },
+                "autoLocation": {
+                    mustFields: ["latitude", "longitude"],
+                    mayFields: [],
+                    sessionControl: false
+                },
+                "getCloseLocation": {
+                    mustFields: ["latitude", "longitude"],
+                    mayFields: [],
+                    sessionControl: false
+                },
+            },
         }
     }
 
@@ -242,10 +261,6 @@ class Validation {
                 return home.getHomes(reqBody, params, parentId);
             case "getHome": 
                 return home.getHome(reqBody, params, parentId);
-            case "autoLocation": 
-                return home.autoLocation(reqBody, params, parentId);
-            case "getCloseLocation": 
-                return home.getCloseLocation(reqBody, params);
             case "addHome": 
                 return home.addHome(reqBody, params, parentId);
             case "deleteHome": 
@@ -284,12 +299,20 @@ class Validation {
                 return interaction.rejectRequest(reqBody, params, parentId); 
             case "acceptRequest": 
                 return interaction.acceptRequest(reqBody, params, parentId); 
+            case "joinEvent": 
+                return interaction.joinEvent(reqBody, params, parentId); 
+            case "cancelParticipation": 
+                return interaction.cancelParticipation(reqBody, params, parentId); 
+            case "listParticipants": 
+                return generic.listParticipants(reqBody, params, parentId); 
+            case "autoLocation": 
+                return generic.autoLocation(reqBody, params);
+            case "getCloseLocation": 
+                return generic.getCloseLocation(reqBody, params);
             default:
                 return {status: "validation failure"}
         }
     }
-
-
 }
 
 module.exports = Validation;

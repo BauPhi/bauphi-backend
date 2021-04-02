@@ -10,7 +10,7 @@ class Event {
             console.log(err)
             return {
                 status: "FAILURE",
-                message: "db error"
+                message: err.detail
             }
         });
 
@@ -21,7 +21,7 @@ class Event {
             console.log(err)
             return {
                 status: "FAILURE",
-                message: "db error"
+                message: err.detail
             }
         });
 
@@ -32,7 +32,7 @@ class Event {
             console.log(err)
             return {
                 status: "FAILURE",
-                message: "db error"
+                message: err.detail
             }
         });
 
@@ -81,7 +81,7 @@ class Event {
                     console.log(err)
                     return {
                         status: "FAILURE",
-                        message: "db error"
+                        message: err.detail
                     }
                 })
             }
@@ -95,7 +95,7 @@ class Event {
             console.log(err)
             return {
                 status: "FAILURE",
-                message: "db error"
+                message: err.detail
             }
         });
     }
@@ -191,7 +191,7 @@ class Event {
             console.log(err)
             return {
                 status: "FAILURE",
-                message: "db error"
+                message: err.detail
             }
         });
     }
@@ -243,11 +243,12 @@ class Event {
             console.log(err)
             return {
                 status: "FAILURE",
-                message: "db error"
+                message: err.detail
             }
         });   
 
     }
+
 }
 
 module.exports = Event;

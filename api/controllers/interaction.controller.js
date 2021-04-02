@@ -42,6 +42,17 @@ interactionRouter.patch('/accept-request', async (req, res) => {
 })
 
 
+interactionRouter.post('/join-event', async (req, res) => {
+    const url = req.baseUrl.substring();
+    const user_id = url.substring(11, url.lastIndexOf('interactions')-1)
+    res.status(200).json(await validation.validateRequest(req, "interaction", "joinEvent", user_id))
+})
 
+
+interactionRouter.delete('/cancel-participation/:event_id', async (req, res) => {
+    const url = req.baseUrl.substring();
+    const user_id = url.substring(11, url.lastIndexOf('interactions')-1)
+    res.status(200).json(await validation.validateRequest(req, "interaction", "cancelParticipation", user_id))
+})
 
 module.exports = interactionRouter;
