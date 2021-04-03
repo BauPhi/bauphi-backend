@@ -4,7 +4,7 @@ const knex = require('../dbfunctions/dbControls');
 class Generic{
 
     async listParticipants(reqBody, params, event_id){
-        return knex('participation').select('attendee').where({event: event_id}).returning("*")
+        return knex('participation').select('attendee', 'comment').where({event: event_id}).returning("*")
         .then((participants) => {
             return {
                 status: "SUCCESS",
@@ -35,14 +35,15 @@ class Generic{
                 const addressFields = Object.keys(json.address)
                 const addressFieldCheck = addressFields.includes("country" && "province")
                 if(addressFieldCheck){
+                    var detailedInfo = json.address.suburb || json.address.village || json.address.neighbourhood || json.address.city_district || json.address.district
                     apiResponse = {
                         api_status: "SUCCESS",
                         api_message: "address is returned",
-                        home_name: json.address.suburb + "/" + json.address.province,
-                        country: json.address.country,
-                        state: json.address.province,
-                        city: json.address.county || json.address.town,
-                        neighbourhood: json.address.suburb || json.address.village
+                        home_name: detailedInfo + "/" + json.address.province,
+                        country: json.address.country || "",
+                        state: json.address.province || "",
+                        city: json.address.county || json.address.town || "",
+                        neighbourhood: detailedInfo + ", "  + (json.address.road || "") || ""
                     }
                 }
                 else{
