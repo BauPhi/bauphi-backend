@@ -168,7 +168,7 @@ class Validation {
                 },
                 "joinEvent": {
                     mustFields: ["event"],
-                    mayFields: [],
+                    mayFields: ["comment"],
                     sessionControl: true
                 },
                 "cancelParticipation": {
