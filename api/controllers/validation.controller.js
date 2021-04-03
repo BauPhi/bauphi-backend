@@ -193,6 +193,11 @@ class Validation {
                     mayFields: [],
                     sessionControl: false
                 },
+                "getCloseEvents": {
+                    mustFields: ["latitude", "longitude"],
+                    mayFields: [],
+                    sessionControl: false
+                },
             },
         }
     }
@@ -309,6 +314,8 @@ class Validation {
                 return generic.autoLocation(reqBody, params);
             case "getCloseLocation": 
                 return generic.getCloseLocation(reqBody, params);
+            case "getCloseEvents": 
+                return generic.getCloseEvents(reqBody, params);
             default:
                 return {status: "validation failure"}
         }

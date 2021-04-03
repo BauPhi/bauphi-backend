@@ -136,6 +136,103 @@ class Generic{
         });
     }
 
+
+    async getCloseEvents(reqBody, params){
+        var getEvents = async (tablename) => await knex(tablename).select()
+        .then(function(events) {
+
+            Number.prototype.toRad = function(){
+                return this * Math.PI /180;
+            }
+            
+            var dist_list = [];
+
+            var i;
+            for(i = 0; i < events.length; i++) {
+                var lat1 = events[i].latitude;
+                var lon1 = events[i].longitude;
+
+                const R = 6371;
+
+                var x1 = reqBody.latitude - lat1;
+                var dLat = x1.toRad();
+                var x2 = reqBody.longitude - lon1;
+                var dLon = x2.toRad();
+
+                var a = Math.sin(dLat/2) * Math.sin(dLat /2) +
+                        Math.cos(lat1.toRad()) * Math.cos(reqBody.latitude.toRad()) *
+                        Math.sin(dLon/2) * Math.sin(dLon/2);
+                var c = 2 * Math.atan(Math.sqrt(a), Math.sqrt(1-a));
+                var d = R * c;
+
+                dist_list.push({'key': d, 'value': events[i]});
+                
+            }
+            dist_list.sort(function(a,b) {
+                var x = a['key'];
+                var y = b['key'];
+                return ((x < y) ? -1 : ((x > y) ? 1 : 0))
+            });
+
+            if(dist_list.length > 0) {
+                return {
+                    status: "SUCCESS",
+                    message: "all " + params.type + " events are listed in sorted manner",
+                    events: dist_list
+                }
+            }
+            else {
+                return {
+                    status: "FAILURE",
+                    message: "no event found"
+                }
+            }
+        }).catch(err => {
+            console.log(err)
+            return {
+                status: "FAILURE",
+                message: err.detail
+            }
+        });
+        
+        if(params.type){
+            if(params.type === "meeting" || params.type === "supply"){
+                return getEvents(params.type)
+            }
+            else{
+                return {
+                    status: "FAILURE",
+                    message: "query parameter is wrong. type can be 'meeting' or 'supply'."
+                }
+            }
+        }
+        else{
+            
+            var meetings = await getEvents("meeting")
+            .then((res) => {
+                return res.events || []
+            })
+
+            var supplies = await getEvents("supply")
+            .then((res) => {
+                return res.events || []
+            })
+            
+            var events = meetings.concat(supplies)
+            
+            events.sort(function(a,b) {
+                var x = a['key'];
+                var y = b['key'];
+                return ((x < y) ? -1 : ((x > y) ? 1 : 0))
+            });
+
+            return {
+                status: "SUCCESS",
+                message: "all meeting & supply events are listed in sorted manner",
+                events: events
+            }
+        }
+    }
 }
 
 module.exports = Generic;
