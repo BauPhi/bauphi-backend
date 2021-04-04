@@ -1,4 +1,6 @@
 const express = require('express')
+const cors = require('cors');
+
 
 const userRouter = require('./controllers/user.controller')
 const homeRouter = require('./controllers/home.controller')
@@ -9,6 +11,8 @@ const genericRouter = require('./controllers/generic.controller')
 
 const server = express();
 server.use(express.json())
+server.use(cors());
+server.options('*', cors());
 
 server.get('/', (req, res) => {
     res.json({ description: "bauphi api route!" })
