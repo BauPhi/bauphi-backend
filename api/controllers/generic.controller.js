@@ -12,11 +12,11 @@ genericRouter.post('/auto-location', async (req, res) => {
     res.status(200).json(await validation.validateRequest(req, "generic", "autoLocation"))
 })
 
-genericRouter.get('/get-close-homes', async (req, res) => {
+genericRouter.post('/get-close-homes', async (req, res) => {
     res.status(200).json(await validation.validateRequest(req, "generic", "getCloseLocation"))
 })
 
-genericRouter.get('/get-close-events', async (req, res) => {
+genericRouter.post('/get-close-events', async (req, res) => {
     req.params.type = req.query.type
     res.status(200).json(await validation.validateRequest(req, "generic", "getCloseEvents"))
 })
