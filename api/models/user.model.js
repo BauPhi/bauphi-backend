@@ -1,4 +1,5 @@
 const knex = require('../dbfunctions/dbControls');
+const sha256 = require('js-sha256');
 
 class User {
     
@@ -15,7 +16,7 @@ class User {
         .then(async function(user) {
 
             if(user && user.length > 0){
-                isValid = (user[0].password === reqBody.password);
+                isValid = (user[0].password === sha256(reqBody.password));
     
                 if(isValid){
                     const safeUser = user[0];
@@ -121,6 +122,7 @@ class User {
 
         let sampleAddUserResponse = "";
         if(fieldCheck){
+            reqBody['password'] = sha256(reqBody['password']);
             return knex('users').insert(reqBody)
             .then(function() {
                 sampleAddUserResponse = {
