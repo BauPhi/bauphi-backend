@@ -16,11 +16,6 @@ server.use(cors());
 server.options('*', cors());
 const generic = require('./models/generic.model')
 const gen = new generic();
-
-const server = express();
-server.use(express.json())
-server.use(cors());
-server.options('*', cors());
 //cron.schedule('15 * * * *', gen.checkAndOpenForDisaster);
 
 
