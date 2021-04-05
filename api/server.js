@@ -1,5 +1,6 @@
 const express = require('express')
 const cors = require('cors');
+const cron = require('node-cron');
 
 
 const userRouter = require('./controllers/user.controller')
@@ -13,6 +14,15 @@ const server = express();
 server.use(express.json())
 server.use(cors());
 server.options('*', cors());
+const generic = require('./models/generic.model')
+const gen = new generic();
+
+const server = express();
+server.use(express.json())
+server.use(cors());
+server.options('*', cors());
+//cron.schedule('15 * * * *', gen.checkAndOpenForDisaster);
+
 
 server.get('/', (req, res) => {
     res.json({ description: "bauphi api route!" })

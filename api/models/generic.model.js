@@ -136,6 +136,50 @@ class Generic{
         });
     }
 
+    async checkAndOpenForDisaster(){
+
+        Number.prototype.toRad = function(test){
+            return this * Math.PI /180;
+        }
+
+        console.log("in function");
+        var result = await fetch('https://api.orhanaydogdu.com.tr/deprem/live.php?limit=10')
+        .then(res => res.json())
+        .then(async function(res) {
+            await knex('home').select('home_id', 'home_owner', 'latitude', 'longitude')
+            .then(function(homes) {
+                var i, j;
+                
+                for(j = 0; j < res.result.length; j++) {
+                    for(i = 0; i < homes.length; i++) {
+                        var lat1 = homes[i].latitude;
+                        var lon1 = homes[i].longitude;
+
+                        const R = 6371;
+
+                        var x1 = res.result[j].latitude - lat1;
+                        var dLat = x1.toRad();
+                        var x2 = res.result[j].longitude - lon1;
+                        var dLon = x2.toRad();
+
+                        var a = Math.sin(dLat/2) * Math.sin(dLat /2) +
+                                Math.cos(lat1.toRad()) * Math.cos(res.result[j].lat.toRad()) *
+                                Math.sin(dLon/2) * Math.sin(dLon/2);
+                        var c = 2 * Math.atan(Math.sqrt(a), Math.sqrt(1-a));
+                        var d = R * c;
+ 
+                        if(d < (Math.abs(res.result[j].mag - 4) * 100)) {
+                            //db action
+                            //notification action
+                        }                
+                }}
+                return;
+            });
+        }).catch(err => {
+            console.log(err)
+        });
+    }
+
 
     async getCloseEvents(reqBody, params){
         var getEvents = async (tablename) => await knex(tablename).select()
