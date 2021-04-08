@@ -198,6 +198,11 @@ class Validation {
                     mayFields: [],
                     sessionControl: false
                 },
+                "getUserDetails": {
+                    mustFields: [],
+                    mayFields: [],
+                    sessionControl: false
+                },
             },
         }
     }
@@ -316,6 +321,8 @@ class Validation {
                 return generic.getCloseLocation(reqBody, params);
             case "getCloseEvents": 
                 return generic.getCloseEvents(reqBody, params);
+            case "getUserDetails": 
+                return generic.getUserDetails(reqBody, params);
             default:
                 return {status: "validation failure"}
         }
