@@ -26,15 +26,15 @@ genericRouter.get('/users-detailed/:user_id', async (req, res) => {
 })
 
 genericRouter.get('/all-homes', async (req, res) => {
-    res.status(200).json({"all homes": "hey"})
+    res.status(200).json(await validation.validateRequest(req, "generic", "getAllHomes"))
 })
 
 genericRouter.get('/all-events', async (req, res) => {
-    res.status(200).json({"all events": "hey"})
+    res.status(200).json(await validation.validateRequest(req, "generic", "getAllEvents"))
 })
 
 genericRouter.get('/all-announcements', async (req, res) => {
-    res.status(200).json({"all ann": "hey"})
+    res.status(200).json(await validation.validateRequest(req, "generic", "getAllAnnouncements"))
 })
 
 

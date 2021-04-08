@@ -380,6 +380,66 @@ class Generic{
     }
 
 
+
+
+    async getAllHomes(reqBody, params){
+        return knex('home').select().returning('*')
+        .then((homes) => {
+            return {
+                status: "SUCCESS",
+                message: "all homes in db are returned",
+                homes: homes
+            }
+        })
+        .catch((err) => {
+            return {
+                status: "FAILURE",
+                message: "db error"
+            }
+        })
+    }
+
+
+
+
+    async getAllEvents(reqBody, params){
+        return knex('events').select().returning('*')
+        .then((events) => {
+            return {
+                status: "SUCCESS",
+                message: "all events in db are returned",
+                events: events
+            }
+        })
+        .catch((err) => {
+            return {
+                status: "FAILURE",
+                message: "db error"
+            }
+        })
+    }
+
+
+
+
+    async getAllAnnouncements(reqBody, params){
+        return knex('announcement').select().returning('*')
+        .then((announcements) => {
+            return {
+                status: "SUCCESS",
+                message: "all announcements in db are returned",
+                announcements: announcements
+            }
+        })
+        .catch((err) => {
+            return {
+                status: "FAILURE",
+                message: "db error"
+            }
+        })
+    }
+
+
 }
 
 module.exports = Generic;
