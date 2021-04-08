@@ -277,6 +277,169 @@ class Generic{
             }
         }
     }
+
+    async getUserDetails(reqBody, params){
+
+
+        var user = await knex('users').select().where({user_id: params.user_id}).returning("*")
+        .then((user) => {
+            return user[0]
+        })
+        .catch((err) => {
+            return {
+                message: "problem at getting the user"
+            }
+        })
+
+        var homes = await knex('home').select().where({home_owner: params.user_id}).returning("*")
+        .then((homes) => {
+            return homes
+        })
+        .catch((err) => {
+            return {
+                message: "problem at getting the homes"
+            }
+        })
+
+        var events = await knex('events').select().where({event_starter: params.user_id}).returning("*")
+        .then((events) => {
+            return events
+        })
+        .catch((err) => {
+            return {
+                message: "problem at getting the events"
+            }
+        })
+
+
+        var announcements = await knex('announcement').select().where({ann_starter: params.user_id}).returning("*")
+        .then((announcements) => {
+            return announcements
+        })
+        .catch((err) => {
+            return {
+                message: "problem at getting the announcements"
+            }
+        })
+
+
+
+        var sent_home_requests = await knex('request').select().where({victim: params.user_id}).returning("*")
+        .then((reqs) => {
+            return reqs
+        })
+        .catch((err) => {
+            return {
+                message: "problem at getting the requests sent"
+            }
+        })
+
+
+        var received_home_requests = await knex('request').select().where({home_owner: params.user_id}).returning("*")
+        .then((reqs) => {
+            return reqs
+        })
+        .catch((err) => {
+            return {
+                message: "problem at getting the requests received"
+            }
+        })
+
+
+        var participations = await knex('participation').select().where({attendee: params.user_id}).returning("*")
+        .then((parts) => {
+            return parts
+        })
+        .catch((err) => {
+            return {
+                message: "problem at getting the participations"
+            }
+        })
+
+        if(user){
+            return {
+                status: "SUCCESS",
+                message: "all data related to user is returned",
+                user: user,
+                homes: homes,
+                events: events,
+                announcements: announcements,
+                sent_home_requests: sent_home_requests,
+                received_home_requests: received_home_requests,
+                participations: participations
+            }
+        }
+        else{
+            return {
+                status: "SUCCESS",
+                message: "user not found"
+            }
+        }
+
+        
+    }
+
+
+
+
+    async getAllHomes(reqBody, params){
+        return knex('home').select().returning('*')
+        .then((homes) => {
+            return {
+                status: "SUCCESS",
+                message: "all homes in db are returned",
+                homes: homes
+            }
+        })
+        .catch((err) => {
+            return {
+                status: "FAILURE",
+                message: "db error"
+            }
+        })
+    }
+
+
+
+
+    async getAllEvents(reqBody, params){
+        return knex('events').select().returning('*')
+        .then((events) => {
+            return {
+                status: "SUCCESS",
+                message: "all events in db are returned",
+                events: events
+            }
+        })
+        .catch((err) => {
+            return {
+                status: "FAILURE",
+                message: "db error"
+            }
+        })
+    }
+
+
+
+
+    async getAllAnnouncements(reqBody, params){
+        return knex('announcement').select().returning('*')
+        .then((announcements) => {
+            return {
+                status: "SUCCESS",
+                message: "all announcements in db are returned",
+                announcements: announcements
+            }
+        })
+        .catch((err) => {
+            return {
+                status: "FAILURE",
+                message: "db error"
+            }
+        })
+    }
+
+
 }
 
 module.exports = Generic;

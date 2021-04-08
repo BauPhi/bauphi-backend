@@ -198,6 +198,26 @@ class Validation {
                     mayFields: [],
                     sessionControl: false
                 },
+                "getUserDetails": {
+                    mustFields: [],
+                    mayFields: [],
+                    sessionControl: false
+                },
+                "getAllHomes": {
+                    mustFields: [],
+                    mayFields: [],
+                    sessionControl: false
+                },
+                "getAllEvents": {
+                    mustFields: [],
+                    mayFields: [],
+                    sessionControl: false
+                },
+                "getAllAnnouncements": {
+                    mustFields: [],
+                    mayFields: [],
+                    sessionControl: false
+                },
             },
         }
     }
@@ -316,6 +336,14 @@ class Validation {
                 return generic.getCloseLocation(reqBody, params);
             case "getCloseEvents": 
                 return generic.getCloseEvents(reqBody, params);
+            case "getUserDetails": 
+                return generic.getUserDetails(reqBody, params);
+            case "getAllHomes": 
+                return generic.getAllHomes(reqBody, params);
+            case "getAllEvents": 
+                return generic.getAllEvents(reqBody, params);
+            case "getAllAnnouncements": 
+                return generic.getAllAnnouncements(reqBody, params);
             default:
                 return {status: "validation failure"}
         }

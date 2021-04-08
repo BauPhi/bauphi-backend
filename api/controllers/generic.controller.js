@@ -21,6 +21,22 @@ genericRouter.post('/get-close-events', async (req, res) => {
     res.status(200).json(await validation.validateRequest(req, "generic", "getCloseEvents"))
 })
 
+genericRouter.get('/users-detailed/:user_id', async (req, res) => {
+    res.status(200).json(await validation.validateRequest(req, "generic", "getUserDetails"))
+})
+
+genericRouter.get('/all-homes', async (req, res) => {
+    res.status(200).json(await validation.validateRequest(req, "generic", "getAllHomes"))
+})
+
+genericRouter.get('/all-events', async (req, res) => {
+    res.status(200).json(await validation.validateRequest(req, "generic", "getAllEvents"))
+})
+
+genericRouter.get('/all-announcements', async (req, res) => {
+    res.status(200).json(await validation.validateRequest(req, "generic", "getAllAnnouncements"))
+})
+
 
 
 module.exports = genericRouter;
