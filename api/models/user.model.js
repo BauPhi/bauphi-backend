@@ -33,7 +33,7 @@ class User {
                 }
                 else{
                     return {
-                        status: "SUCCESS",
+                        status: "FAILURE",
                         message: "login has failed"
                     }
                 }
