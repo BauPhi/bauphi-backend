@@ -440,6 +440,47 @@ class Generic{
     }
 
 
+    async sendNotification(notification){
+
+        // reg id's will come here as ["123", "456", "abc"]
+
+        const fetch = require('node-fetch');
+
+        let body = {
+            registration_ids: notification.reg_ids,
+            data: {
+                title: notification.title,
+                message: notification.message
+            }
+        }
+    
+        return await fetch('https://fcm.googleapis.com/fcm/send', {
+            method: 'POST',
+            body: JSON.stringify(body),
+            headers: {
+                'Content-Type': 'application/json' ,
+                'Accept': 'application/json',
+                'Authorization': 'key=AAAAD5bSw-0:APA91bEl_9S8KrTCt5GSEkMse-dzvbIDXHrKCtlgsW86dLReZfs7CzlCg6n39ucH_lbyyDb9RiTr7CPK_S_OlenbZAgcuBP-8r4o3rZ9Jho4kSXKK2BFcttgXkVeIcdcfxoc6mU351a3'
+            }
+        }).then(res => res.json())
+        .then((json) => {
+            return {
+                status: "SUCCESS",
+                message: "response json is returned by fcm",
+                data: json
+            }
+        })
+        .catch((err) => {
+            console.log(err)
+            return {
+                status: "FAILURE",
+                message: "external error, couldn't send notification"
+            }
+        })
+    }
+
+    
+
 }
 
 module.exports = Generic;
