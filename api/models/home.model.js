@@ -64,43 +64,33 @@ class Home {
 
     async addHome(reqBody, params, user_id){
 
-        //check fields
-        const fields = Object.keys(reqBody)
-        const fieldCheck = fields.includes("home_owner" && "isVisible" && "home_name" && "country" && "state" && "city" && "neighbourhood" && "latitude" && "longitude") && fields.length < 10
         reqBody['home_owner'] = user_id;
-        if(fieldCheck){
-            return knex('home').insert(reqBody)
-            .then(function(home) {
-                return {
-                    status: "SUCCESS",
-                    message: "new home is added",
-                    user_id: user_id,
-                    home: {
-                        home_owner: reqBody.home_owner,
-                        home_name: reqBody.home_name,
-                        isVisible: reqBody.isVİsible,
-                        country: reqBody.country,
-                        state: reqBody.state,
-                        city: reqBody.city,
-                        neighbourhood: reqBody.neighbourhood,
-                        latitude: reqBody.latitude,
-                        longitude: reqBody.longitude
-                    }
+        return knex('home').insert(reqBody)
+        .then(function(home) {
+            return {
+                status: "SUCCESS",
+                message: "new home is added",
+                user_id: user_id,
+                home: {
+                    home_owner: reqBody.home_owner,
+                    home_name: reqBody.home_name,
+                    isVisible: reqBody.isVİsible,
+                    country: reqBody.country,
+                    state: reqBody.state,
+                    city: reqBody.city,
+                    neighbourhood: reqBody.neighbourhood,
+                    latitude: reqBody.latitude,
+                    longitude: reqBody.longitude
                 }
-            }).catch((err) => {
-                console.log(err)
-                return {
-                    status: "FAILURE",
-                    message: err.detail
-                }
-            });
-        }
-        else{
+            }
+        }).catch((err) => {
+            console.log(err)
             return {
                 status: "FAILURE",
-                message: "request body fields are not true"
+                message: err.detail
             }
-        }
+        });
+        
     }
         
     

@@ -66,7 +66,7 @@ class Validation {
                     sessionControl: true
                 },
                 "addHome": {
-                    mustFields: ["home_owner", "home_name", "isVisible", "country", "state", "city", "neighbourhood", "latitude", "longitude"],
+                    mustFields: ["home_name", "isVisible", "country", "state", "city", "neighbourhood", "latitude", "longitude"],
                     mayFields: [],
                     sessionControl: true
                 },
