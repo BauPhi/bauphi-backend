@@ -218,6 +218,11 @@ class Validation {
                     mayFields: [],
                     sessionControl: false
                 },
+                "sendNotification": {
+                    mustFields: ["reg_ids", "title", "message"],
+                    mayFields: [],
+                    sessionControl: false
+                }
             },
         }
     }
@@ -344,6 +349,8 @@ class Validation {
                 return generic.getAllEvents(reqBody, params);
             case "getAllAnnouncements": 
                 return generic.getAllAnnouncements(reqBody, params);
+            case "sendNotification": 
+                return generic.sendNotification(reqBody);
             default:
                 return {status: "validation failure"}
         }

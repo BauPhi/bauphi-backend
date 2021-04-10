@@ -37,6 +37,8 @@ genericRouter.get('/all-announcements', async (req, res) => {
     res.status(200).json(await validation.validateRequest(req, "generic", "getAllAnnouncements"))
 })
 
-
+genericRouter.post('/notify', async (req, res) => {
+    res.status(200).json(await validation.validateRequest(req, "generic", "sendNotification"))
+})
 
 module.exports = genericRouter;
