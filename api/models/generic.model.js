@@ -193,6 +193,9 @@ class Generic{
 
             var i;
             for(i = 0; i < events.length; i++) {
+                if(!events[i].latitude){
+                    continue;
+                }
                 var lat1 = events[i].latitude;
                 var lon1 = events[i].longitude;
 
