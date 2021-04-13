@@ -58,6 +58,98 @@ class User {
         // check if login request is valid
         
     }
+
+
+    async oauthLogin(reqBody, params){
+        const Session = require('../controllers/session.controller')
+        const session = new Session()
+
+        var user = await knex('users').select().where({ email: reqBody.email }).returning('*')
+        .then((user) => {
+            if(user.length > 0){
+                return user[0];
+            }
+            else{
+                return false;
+            }
+        })
+        .catch((err) => {
+            console.log(err)
+            return false;
+        })
+
+        if(user){
+            if(user.is_oauth_user){
+
+                if(user.google_uid === reqBody.google_uid){
+                    
+                    return {
+                        status: "SUCCESS",
+                        message: "user is logged in using a google account",
+                        user: user,
+                        session: await session.createSession(user.user_id)
+                    }
+                }
+                else{
+                    return {
+                        status: "FAILURE",
+                        message: "user's google uid does not match"
+                    }
+                }
+
+            }
+            else{
+                var updateResponse = await this.updateUser(
+                    {
+                        is_oauth_user: true,
+                        google_uid: reqBody.google_uid
+                    },
+                    {
+                        id: user.user_id
+                    }
+                )
+                if(updateResponse.status === "SUCCESS"){
+                    return {
+                        status: "SUCCESS",
+                        message: "existing user is now also a oauth user",
+                        user: updateResponse.user,
+                        session: await session.createSession(user.user_id)
+                    }
+                }
+            }
+        }
+        else{
+            var addResponse = await this.addUser(
+                {
+                    name: reqBody.email.substring(0, reqBody.email.indexOf("@")),
+                    surname: "",
+                    email: reqBody.email,
+                    phone: "",
+                    password: "notset",
+                    google_uid: reqBody.google_uid,
+                    is_oauth_user: true
+                }
+            )
+
+            if(addResponse.status === "SUCCESS"){
+                return {
+                    status: "SUCCESS",
+                    message: "a new user is added using oauth",
+                    user: addResponse.user,
+                    session: await session.createSession(addResponse.user.user_id)
+                }
+            }
+            else{
+                return {
+                    status: "FAILURE",
+                    message: "failure when adding a brand new oauth user",
+                    error: addResponse
+                }
+            }
+        }
+
+
+    }
         
 
     async getAllUsers(reqBody, params){
@@ -115,48 +207,34 @@ class User {
     }
 
     async addUser(reqBody, params){
+        reqBody['password'] = sha256(reqBody['password']);
+        return knex('users').insert(reqBody).returning('*')
+        .then(function(user) {
 
-        // check if new user entry is valid
-        const fields = Object.keys(reqBody)
-        const fieldCheck = fields.includes("name" && "surname" && "password" && "email" && "phone") && fields.length < 6
-
-        let sampleAddUserResponse = "";
-        if(fieldCheck){
-            reqBody['password'] = sha256(reqBody['password']);
-            return knex('users').insert(reqBody)
-            .then(function() {
-                sampleAddUserResponse = {
+            if(user.length > 0){
+                return {
                     status: "SUCCESS",
-                    message: "new user is added(sample)",
-                    user: {
-                        name: reqBody.name,
-                        surname: reqBody.surname,
-                        email: reqBody.email,
-                        phone: reqBody.phone
-                    }
+                    message: "new user is added",
+                    user: user[0]
                 }
-                return sampleAddUserResponse;
-            })
-            .catch((err) => {
-                sampleAddUserResponse = {
-                    status: "FAILURE",
-                    message: err.detail
-                }
-                console.log(err)
-                return sampleAddUserResponse;
-            });
-            
-        }
-        else{
-            sampleAddUserResponse = {
-                status: "FAILURE",
-                message: "request fields are wrong"
             }
-            return sampleAddUserResponse;
-        }
-        
+            else{
+                return {
+                    status: "FAILURE",
+                    message: "error at db",
+                    user: user[0]
+                }
+            }
+            
+        })
+        .catch((err) => {
+            console.log(err)
 
-        return sampleAddUserResponse;
+            return {
+                status: "FAILURE",
+                message: err.detail
+            }
+        });
     }
 
     async deleteUser(reqBody, params){
@@ -199,56 +277,32 @@ class User {
 
     async updateUser(reqBody, params){
 
-        // check if request is valid
-        //const user = this.dbUsers.find(x => x.user_id === params.id);
-
-        // check if new user entry is valid
-        const fields = Object.keys(reqBody)
-        const fieldCheck = fields.length < 6
-
-        let sampleUpdateUserResponse = {}
-
-
-        if(fieldCheck){
-            return await knex('users').where('user_id', params.id).update(reqBody)
-            .then((queryResult) => {
-                if(queryResult){
-                    return {
-                        status: "SUCCESS",
-                        message: "user is updated",
-                        user: {
-                            user_id: params.id,
-                            name: reqBody.name,
-                            surname: reqBody.surname,
-                            email: reqBody.email,
-                            phone: reqBody.phone
-                        }
-                    }
+        return await knex('users').where('user_id', params.id).update(reqBody).returning('*')
+        .then((user) => {
+            if(user.length > 0){
+                return {
+                    status: "SUCCESS",
+                    message: "user is updated",
+                    user: user[0]
                 }
-                else{
-                    return {
-                        status: "FAILURE",
-                        message: "user is not found",
-                    }
-                }
-            })
-            .catch((err) => {
-                console.log(err)
+            }
+            else{
                 return {
                     status: "FAILURE",
-                    message: "db error when updating user"
+                    message: "user is not found",
                 }
-            });
-        }
-        else{
-            sampleUpdateUserResponse = {
-                status: "FAILURE",
-                message: "request body fields are not true"
             }
-        }
-
-        return sampleUpdateUserResponse;
+        })
+        .catch((err) => {
+            console.log(err)
+            return {
+                status: "FAILURE",
+                message: "db error when updating user"
+            }
+        });
     }
+        
+
 
 }
 
