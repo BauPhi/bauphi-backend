@@ -67,7 +67,7 @@ class Validation {
                 },
                 "addHome": {
                     mustFields: ["home_name", "isVisible", "country", "state", "city", "neighbourhood", "latitude", "longitude"],
-                    mayFields: [],
+                    mayFields: ["is_pets_allowed"],
                     sessionControl: true
                 },
                 "deleteHome": {

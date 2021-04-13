@@ -65,24 +65,23 @@ class Home {
     async addHome(reqBody, params, user_id){
 
         reqBody['home_owner'] = user_id;
-        return knex('home').insert(reqBody)
+        return knex('home').insert(reqBody).returning('*')
         .then(function(home) {
-            return {
-                status: "SUCCESS",
-                message: "new home is added",
-                user_id: user_id,
-                home: {
-                    home_owner: reqBody.home_owner,
-                    home_name: reqBody.home_name,
-                    isVisible: reqBody.isVİsible,
-                    country: reqBody.country,
-                    state: reqBody.state,
-                    city: reqBody.city,
-                    neighbourhood: reqBody.neighbourhood,
-                    latitude: reqBody.latitude,
-                    longitude: reqBody.longitude
+            if(home.length > 0){
+                return {
+                    status: "SUCCESS",
+                    message: "new home is added",
+                    user_id: user_id,
+                    home: home[0]
                 }
             }
+            else{
+                return {
+                    status: "FAILURE",
+                    message: "db failure"
+                }
+            }
+            
         }).catch((err) => {
             console.log(err)
             return {
@@ -128,24 +127,23 @@ class Home {
         const home = await this.getHome(reqBody, params, user_id);
 
         if(home.home){
-            return knex('home').where({'home_owner': user_id,'home_id': params.id}).update(reqBody)
-            .then(function() {
-                return {
-                    status: "SUCCESS",
-                    message: "home is updated",
-                    user_id: user_id,
-                    home: {
-                        home_id: params.id,
-                        home_owner: reqBody.home_owner,
-                        home_name: reqBody.home_name,
-                        country: reqBody.country,
-                        state: reqBody.state,
-                        city: reqBody.city,
-                        neighbourhood: reqBody.neighbourhood,
-                        latitude: reqBody.latitude,
-                        longitude: reqBody.longitude
+            return knex('home').where({'home_owner': user_id,'home_id': params.id}).update(reqBody).returning('*')
+            .then(function(home) {
+                if(home.length > 0){
+                    return {
+                        status: "SUCCESS",
+                        message: "home is updated",
+                        user_id: user_id,
+                        home: home[0]
+                    }     
+                }
+                else{
+                    return {
+                        status: "FAILURE",
+                        message: "db error"
                     }
-                }       
+                }
+                  
             }).catch((err) => {
                 console.log(err)
                 return {
