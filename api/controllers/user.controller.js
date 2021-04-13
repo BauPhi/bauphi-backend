@@ -28,4 +28,8 @@ userRouter.post('/login', async (req, res) => {
     res.status(200).json(await validation.validateRequest(req, "user", "login"));
 })
 
+userRouter.post('/google-auth', async (req, res) => {
+    res.status(200).json(await validation.validateRequest(req, "user", "googleAuth"));
+})
+
 module.exports = userRouter;

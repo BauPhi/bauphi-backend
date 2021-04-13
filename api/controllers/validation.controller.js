@@ -52,6 +52,11 @@ class Validation {
                     mustFields: ["email", "password"],
                     mayFields: [],
                     sessionControl: false
+                },
+                "googleAuth": {
+                    mustFields: ["google_uid", "email"],
+                    mayFields: [],
+                    sessionControl: false
                 }
             },
             "home": {
@@ -287,6 +292,8 @@ class Validation {
                 return user.updateUser(reqBody, params);
             case "login": 
                 return user.login(reqBody, params);
+            case "googleAuth": 
+                return user.oauthLogin(reqBody, params);
             case "getHomes": 
                 return home.getHomes(reqBody, params, parentId);
             case "getHome": 
