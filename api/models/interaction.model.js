@@ -4,23 +4,69 @@ class Request {
 
     async send(reqBody, params, user_id){
 
-        reqBody['victim'] = user_id;
-        reqBody['results'] = "Pending";
-
-        return knex('request').insert(reqBody).returning('*')
-        .then((newRequest) => {
-            return {
-                status: "SUCCESS",
-                message: "new home request is sent",
-                request: newRequest[0]
-            }
-        })
-        .catch((err) => {
+        if(user_id == reqBody.home_owner){
             return {
                 status: "FAILURE",
-                message: "db error"
+                message: "victim and home owner cannot be the same user"
             }
-        })
+        }
+        else{
+            return knex('home').select().where({home_owner: reqBody.home_owner, home_id: reqBody.home}).returning('*')
+            .then((home) => {
+                if(home.length > 0){
+                    return knex('request').select().where({home: reqBody.home, victim: user_id}).returning('*')
+                    .then((request) => {
+                        if(request.length > 0){
+                            return {
+                                status: "FAILURE",
+                                message: "user already sent an offer for this home"
+                            }
+                        }
+                        else{
+                            reqBody['victim'] = user_id;
+                            reqBody['results'] = "Pending";
+                    
+                            return knex('request').insert(reqBody).returning('*')
+                            .then((newRequest) => {
+                                return {
+                                    status: "SUCCESS",
+                                    message: "new home request is sent",
+                                    request: newRequest[0]
+                                }
+                            })
+                            .catch((err) => {
+                                return {
+                                    status: "FAILURE",
+                                    message: "db error"
+                                }
+                            })
+                        }
+                    })
+                    .catch((err) => {
+                        return {
+                            status: "FAILURE",
+                            message: err.detail
+                        }
+                    })
+                }
+                else{
+                    return {
+                        status: "FAILURE",
+                        message: "no such a home is found"
+                    }
+                }
+            })
+            .catch((err) => {
+                return {
+                    status: "FAILURE",
+                    message: err.detail
+                }
+            })
+
+            
+            
+        }
+        
 
     }
 
