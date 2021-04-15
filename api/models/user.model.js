@@ -64,7 +64,15 @@ class User {
         const Session = require('../controllers/session.controller')
         const session = new Session()
 
-        var user = await knex('users').select().where({ email: reqBody.email }).returning('*')
+        var userCredentials = await this.getSubId(reqBody.access_token);
+        if(!userCredentials){
+            return {
+                status: "FAILURE",
+                message: "google auth is failed, no matching sub id's"
+            }
+        }
+
+        var user = await knex('users').select().where({ email: userCredentials.email }).returning('*')
         .then((user) => {
             if(user.length > 0){
                 return user[0];
@@ -78,11 +86,13 @@ class User {
             return false;
         })
 
+        
+
         if(user){
             if(user.is_oauth_user){
 
-                if(user.google_uid === reqBody.google_uid){
-                    
+                if(user.google_sub_id === userCredentials.sub){
+
                     return {
                         status: "SUCCESS",
                         message: "user is logged in using a google account",
@@ -102,7 +112,7 @@ class User {
                 var updateResponse = await this.updateUser(
                     {
                         is_oauth_user: true,
-                        google_uid: reqBody.google_uid
+                        google_sub_id: userCredentials.sub
                     },
                     {
                         id: user.user_id
@@ -119,14 +129,15 @@ class User {
             }
         }
         else{
+            var randomWords = require('random-words');
             var addResponse = await this.addUser(
                 {
-                    name: reqBody.email.substring(0, reqBody.email.indexOf("@")),
-                    surname: "",
-                    email: reqBody.email,
+                    name: randomWords(),
+                    surname: randomWords(),
+                    email: userCredentials.email,
                     phone: "",
                     password: "notset",
-                    google_uid: reqBody.google_uid,
+                    google_sub_id: userCredentials.sub,
                     is_oauth_user: true
                 }
             )
@@ -149,6 +160,36 @@ class User {
         }
 
 
+    }
+
+    async getSubId(access_token){
+        const fetch = require("node-fetch")
+
+        return await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json' ,
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + access_token
+            }
+        }).then(res => res.json())
+        .then((json) => {
+            if(json.sub){
+                return {
+                    sub: json.sub,
+                    email: json.email
+                };
+            }
+            else{
+                return false;
+            }
+            
+        })
+        .catch((err) => {
+            console.log(err);
+            return false;
+        })
+        
     }
         
 

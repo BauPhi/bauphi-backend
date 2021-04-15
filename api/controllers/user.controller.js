@@ -1,4 +1,5 @@
 const express = require('express')
+const User = require('../models/user.model')
 const userRouter = express.Router()
 
 const Validation = require('./validation.controller')
@@ -30,6 +31,10 @@ userRouter.post('/login', async (req, res) => {
 
 userRouter.post('/google-auth', async (req, res) => {
     res.status(200).json(await validation.validateRequest(req, "user", "googleAuth"));
+})
+
+userRouter.post('/get-id', async (req, res) => {
+    res.status(200).json(await new User().getSubId(req.body.access_token));
 })
 
 module.exports = userRouter;

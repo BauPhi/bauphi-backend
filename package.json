@@ -29,6 +29,7 @@
     "pg": "^8.5.1",
     "postgres": "^1.0.2",
     "pq": "0.0.3",
+    "random-words": "^1.1.1",
     "sqlite3": "^5.0.2",
     "toad-scheduler": "^1.0.2"
   }
