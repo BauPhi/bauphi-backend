@@ -55,7 +55,7 @@ class Validation {
                 },
                 "googleAuth": {
                     mustFields: ["access_token"],
-                    mayFields: ["google_uid", "email"],
+                    mayFields: [],
                     sessionControl: false
                 }
             },
