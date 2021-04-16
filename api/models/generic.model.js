@@ -482,6 +482,66 @@ class Generic{
         })
     }
 
+
+    async listEarthquakes(reqBody){
+        const fetch = require('node-fetch');
+        return await fetch('https://api.orhanaydogdu.com.tr/deprem/live.php?limit=10')
+        .then(res => res.json())
+        .then((res) => {
+
+            var listed = res.result || []
+            var earthquakes = []
+            for(var e in listed){
+                var atom = {
+                    magnitude: listed[e].mag,
+                    location: listed[e].lokasyon,
+                    depth: listed[e].depth + " km",
+                    date: listed[e].date,
+                }
+                if(reqBody.latitude && reqBody.longitude){
+                    var distance = this.findDistance(listed[e].lat, listed[e].lng, reqBody.latitude, reqBody.longitude);
+                    atom["distance"] = distance + " km";
+                }
+                earthquakes.push(atom)
+            }
+            return {
+                status: "SUCCESS",
+                message: "last ten earthquakes are listed",
+                earthquakes: earthquakes
+            }
+        })
+        .catch((err) => {
+            console.log(err)
+            return {
+                status: "FAILURE",
+                message: "external error"
+            }
+        })
+    }
+
+
+    findDistance(lat1, lon1, lat2, lon2){
+        
+        Number.prototype.toRad = function(){
+            return this * Math.PI /180;
+        }
+
+        const R = 6371;
+
+        var x1 = lat2 - lat1;
+        var dLat = x1.toRad();
+        var x2 = lon2 - lon1;
+        var dLon = x2.toRad();
+
+        var a = Math.sin(dLat/2) * Math.sin(dLat /2) +
+                Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+        var c = 2 * Math.atan(Math.sqrt(a), Math.sqrt(1-a));
+        var d = R * c;
+
+        return Math.round(d);
+    }
+
     
 
 }

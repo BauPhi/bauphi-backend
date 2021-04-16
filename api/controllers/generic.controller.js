@@ -41,4 +41,8 @@ genericRouter.post('/notify', async (req, res) => {
     res.status(200).json(await validation.validateRequest(req, "generic", "sendNotification"))
 })
 
+genericRouter.post('/last-earthquakes', async (req, res) => {
+    res.status(200).json(await validation.validateRequest(req, "generic", "listEarthquakes"))
+})
+
 module.exports = genericRouter;

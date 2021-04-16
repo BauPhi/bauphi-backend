@@ -227,6 +227,11 @@ class Validation {
                     mustFields: ["reg_ids", "title", "message"],
                     mayFields: [],
                     sessionControl: false
+                },
+                "listEarthquakes": {
+                    mustFields: [],
+                    mayFields: ["latitude", "longitude"],
+                    sessionControl: false
                 }
             },
         }
@@ -358,6 +363,8 @@ class Validation {
                 return generic.getAllAnnouncements(reqBody, params);
             case "sendNotification": 
                 return generic.sendNotification(reqBody);
+            case "listEarthquakes": 
+                return generic.listEarthquakes(reqBody);
             default:
                 return {status: "validation failure"}
         }
