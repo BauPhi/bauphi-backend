@@ -9,6 +9,7 @@ const eventRouter = require('./controllers/event.controller')
 const announcementRouter = require('./controllers/announcement.controller')
 const interactionRouter = require('./controllers/interaction.controller')
 const genericRouter = require('./controllers/generic.controller')
+const session = require('./controllers/session.controller')
 
 const server = express();
 server.use(express.json())
@@ -16,7 +17,12 @@ server.use(cors());
 server.options('*', cors());
 const generic = require('./models/generic.model')
 const gen = new generic();
+const ses = new session();
 //cron.schedule('15 * * * *', gen.checkAndOpenForDisaster);
+/*cron.schedule('10 * * * * *', async function() {
+    console.log("cleaning");
+    ses.checkAll();
+});*/
 
 
 server.get('/', (req, res) => {

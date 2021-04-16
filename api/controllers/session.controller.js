@@ -34,6 +34,27 @@ class Session {
         }
     }
 
+    async checkAll(){
+        var i;
+        await knex('session').select().where('expire_time', ">", (new Date()))
+        .then(async (session) => {
+            if(session.length > 0){
+                for (i = 0; i < session.length; i++) {
+                    await this.deleteSession(session[i].user_id, session[i].session_key)
+                    .then(async () => {
+                        console.log("expired session is deleted")
+                    })
+                    .catch((err) => {
+                        console.log(err)
+                    })
+                }
+            }
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
+
     async createSession(user_id){
         var current = new Date()
         var session = {
