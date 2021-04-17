@@ -40,7 +40,7 @@ class Session {
         .then(async (session) => {
             if(session.length > 0){
                 for (i = 0; i < session.length; i++) {
-                    await this.deleteSession(session[i].user_id, session[i].session_key)
+                    await knex('session').where({'user_id': session[i].user_id, 'session_key': session[i].session_key}).del()
                     .then(async () => {
                         console.log("expired session is deleted")
                     })

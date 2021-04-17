@@ -77,10 +77,6 @@ class Generic{
 
 
     async getCloseLocation(reqBody, params){
-
-        Number.prototype.toRad = function(){
-            return this * Math.PI /180;
-        }
         
         return await knex('home').select().where('isVisible', true)
         .then(function(homes) {
@@ -89,22 +85,8 @@ class Generic{
 
             var i;
             for(i = 0; i < homes.length; i++) {
-                var lat1 = homes[i].latitude;
-                var lon1 = homes[i].longitude;
-
-                const R = 6371;
-
-                var x1 = reqBody.latitude - lat1;
-                var dLat = x1.toRad();
-                var x2 = reqBody.longitude - lon1;
-                var dLon = x2.toRad();
-
-                var a = Math.sin(dLat/2) * Math.sin(dLat /2) +
-                        Math.cos(lat1.toRad()) * Math.cos(reqBody.latitude.toRad()) *
-                        Math.sin(dLon/2) * Math.sin(dLon/2);
-                var c = 2 * Math.atan(Math.sqrt(a), Math.sqrt(1-a));
-                var d = R * c;
-
+                var d = Generic.findDistance(homes[i].latitude, homes[i].longitude, reqBody.latitude, reqBody.longitude);
+                
                 dist_list.push({'key': Math.round(d), 'value': homes[i]});
                 
             }
@@ -138,10 +120,6 @@ class Generic{
 
     async checkAndOpenForDisaster(){
 
-        Number.prototype.toRad = function(test){
-            return this * Math.PI /180;
-        }
-
         const fetch = require("node-fetch");
 
         var notification_list = [];
@@ -155,21 +133,8 @@ class Generic{
                 
                 for(j = 0; j < res.result.length; j++) {
                     for(i = 0; i < homes.length; i++) {
-                        var lat1 = homes[i].latitude;
-                        var lon1 = homes[i].longitude;
-
-                        const R = 6371;
-
-                        var x1 = res.result[j].latitude - lat1;
-                        var dLat = x1.toRad();
-                        var x2 = res.result[j].longitude - lon1;
-                        var dLon = x2.toRad();
-
-                        var a = Math.sin(dLat/2) * Math.sin(dLat /2) +
-                                Math.cos(lat1.toRad()) * Math.cos(reqBody.latitude.toRad()) *
-                                Math.sin(dLon/2) * Math.sin(dLon/2);
-                        var c = 2 * Math.atan(Math.sqrt(a), Math.sqrt(1-a));
-                        var d = R * c;
+                        var d = Generic.findDistance(homes[i].latitude, homes[i].longitude, res.result[j].latitude, res.result[j].longitude);
+                        
                         if(d < (Math.abs(res.result[j].mag - 4) * 100)) {
                             knex('home').where({'home_owner': homes[i].home_owner,'home_id': homes[i].home_id}).update("isVisible", true)
                             .then(async function() {
@@ -189,7 +154,23 @@ class Generic{
                 message: "Your home opened to public due to a close disaster"
                 };
             if(notification_list.length > 0){
-                //await Generic.sendNotification(notification).then();
+                let body = {
+                    registration_ids: notification.reg_ids,
+                    data: {
+                        title: notification.title,
+                        message: notification.message
+                    }
+                }
+            
+                await fetch('https://fcm.googleapis.com/fcm/send', {
+                    method: 'POST',
+                    body: JSON.stringify(body),
+                    headers: {
+                        'Content-Type': 'application/json' ,
+                        'Accept': 'application/json',
+                        'Authorization': 'key=AAAAD5bSw-0:APA91bEl_9S8KrTCt5GSEkMse-dzvbIDXHrKCtlgsW86dLReZfs7CzlCg6n39ucH_lbyyDb9RiTr7CPK_S_OlenbZAgcuBP-8r4o3rZ9Jho4kSXKK2BFcttgXkVeIcdcfxoc6mU351a3'
+                    }
+                })
             }
         }).catch(err => {
             console.log(err)
@@ -212,21 +193,7 @@ class Generic{
                 if(!events[i].latitude){
                     continue;
                 }
-                var lat1 = events[i].latitude;
-                var lon1 = events[i].longitude;
-
-                const R = 6371;
-
-                var x1 = reqBody.latitude - lat1;
-                var dLat = x1.toRad();
-                var x2 = reqBody.longitude - lon1;
-                var dLon = x2.toRad();
-
-                var a = Math.sin(dLat/2) * Math.sin(dLat /2) +
-                        Math.cos(lat1.toRad()) * Math.cos(reqBody.latitude.toRad()) *
-                        Math.sin(dLon/2) * Math.sin(dLon/2);
-                var c = 2 * Math.atan(Math.sqrt(a), Math.sqrt(1-a));
-                var d = R * c;
+                var d = Generic.findDistance(events[i].latitude, events[i].longitude, reqBody.latitude, reqBody.longitude);
 
                 dist_list.push({'key': Math.round(d), 'value': events[i]});
                 
@@ -537,7 +504,7 @@ class Generic{
     }
 
 
-    findDistance(lat1, lon1, lat2, lon2){
+    static findDistance(lat1, lon1, lat2, lon2){
         
         Number.prototype.toRad = function(){
             return this * Math.PI /180;
