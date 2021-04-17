@@ -232,6 +232,11 @@ class Validation {
                     mustFields: [],
                     mayFields: ["latitude", "longitude"],
                     sessionControl: false
+                },
+                "listMoneyDonations": {
+                    mustFields: [],
+                    mayFields: [],
+                    sessionControl: false
                 }
             },
         }
@@ -365,6 +370,8 @@ class Validation {
                 return generic.sendNotification(reqBody);
             case "listEarthquakes": 
                 return generic.listEarthquakes(reqBody);
+            case "listMoneyDonations": 
+                return generic.listMoneyDonations(reqBody);
             default:
                 return {status: "validation failure"}
         }

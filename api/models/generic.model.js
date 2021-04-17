@@ -567,6 +567,25 @@ class Generic{
     }
 
 
+    async listMoneyDonations(reqBody){
+        return knex('money').select().returning('*')
+        .then((donations) => {
+            return {
+                status: "SUCCESS",
+                message: "all money donations in db are returned",
+                donations: donations
+            }
+        })
+        .catch((err) => {
+            console.log(err)
+            return {
+                status: "FAILURE",
+                message: "db error"
+            }
+        })
+    }
+
+
     
 
     
