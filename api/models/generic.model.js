@@ -105,7 +105,7 @@ class Generic{
                 var c = 2 * Math.atan(Math.sqrt(a), Math.sqrt(1-a));
                 var d = R * c;
 
-                dist_list.push({'key': Math.round(d) + " km", 'value': homes[i]});
+                dist_list.push({'key': Math.round(d), 'value': homes[i]});
                 
             }
             dist_list.sort(function(a,b) {
@@ -212,7 +212,7 @@ class Generic{
                 var c = 2 * Math.atan(Math.sqrt(a), Math.sqrt(1-a));
                 var d = R * c;
 
-                dist_list.push({'key': Math.round(d) + " km", 'value': events[i]});
+                dist_list.push({'key': Math.round(d), 'value': events[i]});
                 
             }
             dist_list.sort(function(a,b) {
@@ -220,6 +220,7 @@ class Generic{
                 var y = b['key'];
                 return ((x < y) ? -1 : ((x > y) ? 1 : 0))
             });
+
 
             if(dist_list.length > 0) {
                 return {
