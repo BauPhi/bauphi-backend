@@ -3,6 +3,28 @@ const knex = require('../dbfunctions/dbControls');
 
 class Generic{
 
+    findDistance(lat1, lon1, lat2, lon2){
+        
+        Number.prototype.toRad = function(){
+            return this * Math.PI /180;
+        }
+
+        const R = 6371;
+
+        var x1 = lat2 - lat1;
+        var dLat = x1.toRad();
+        var x2 = lon2 - lon1;
+        var dLon = x2.toRad();
+
+        var a = Math.sin(dLat/2) * Math.sin(dLat /2) +
+                Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+        var c = 2 * Math.atan(Math.sqrt(a), Math.sqrt(1-a));
+        var d = R * c;
+
+        return Math.round(d);
+    }
+
     async listParticipants(reqBody, params, event_id){
         return knex('participation').select('attendee', 'comment').where({event: event_id}).returning("*")
         .then((participants) => {
@@ -85,8 +107,27 @@ class Generic{
 
             var i;
             for(i = 0; i < homes.length; i++) {
-                var d = Generic.findDistance(homes[i].latitude, homes[i].longitude, reqBody.latitude, reqBody.longitude);
                 
+                Number.prototype.toRad = function(){
+                    return this * Math.PI /180;
+                }
+        
+                const R = 6371;
+                var lat1 = homes[i].latitude
+                var lon1 = homes[i].longitude 
+                var lat2 = reqBody.latitude
+                var lon2 = reqBody.longitude
+                var x1 = lat2 - lat1;
+                var dLat = x1.toRad();
+                var x2 = lon2 - lon1;
+                var dLon = x2.toRad();
+        
+                var a = Math.sin(dLat/2) * Math.sin(dLat /2) +
+                        Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) *
+                        Math.sin(dLon/2) * Math.sin(dLon/2);
+                var c = 2 * Math.atan(Math.sqrt(a), Math.sqrt(1-a));
+                var d = R * c;
+
                 dist_list.push({'key': Math.round(d), 'value': homes[i]});
                 
             }
@@ -193,7 +234,29 @@ class Generic{
                 if(!events[i].latitude){
                     continue;
                 }
-                var d = Generic.findDistance(events[i].latitude, events[i].longitude, reqBody.latitude, reqBody.longitude);
+
+                Number.prototype.toRad = function(){
+                    return this * Math.PI /180;
+                }
+        
+                const R = 6371;
+
+                var lat1 = events[i].latitude
+                var lon1 = events[i].longitude 
+                var lat2 = reqBody.latitude
+                var lon2 = reqBody.longitude
+                var x1 = lat2 - lat1;
+                var dLat = x1.toRad();
+                var x2 = lon2 - lon1;
+                var dLon = x2.toRad();
+        
+                var a = Math.sin(dLat/2) * Math.sin(dLat /2) +
+                        Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) *
+                        Math.sin(dLon/2) * Math.sin(dLon/2);
+                var c = 2 * Math.atan(Math.sqrt(a), Math.sqrt(1-a));
+                var d = R * c;
+
+
 
                 dist_list.push({'key': Math.round(d), 'value': events[i]});
                 
@@ -504,27 +567,7 @@ class Generic{
     }
 
 
-    findDistance(lat1, lon1, lat2, lon2){
-        
-        Number.prototype.toRad = function(){
-            return this * Math.PI /180;
-        }
-
-        const R = 6371;
-
-        var x1 = lat2 - lat1;
-        var dLat = x1.toRad();
-        var x2 = lon2 - lon1;
-        var dLon = x2.toRad();
-
-        var a = Math.sin(dLat/2) * Math.sin(dLat /2) +
-                Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) *
-                Math.sin(dLon/2) * Math.sin(dLon/2);
-        var c = 2 * Math.atan(Math.sqrt(a), Math.sqrt(1-a));
-        var d = R * c;
-
-        return Math.round(d);
-    }
+    
 
     
 
