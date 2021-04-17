@@ -142,7 +142,10 @@ class Generic{
             return this * Math.PI /180;
         }
 
-        console.log("in function");
+        const fetch = require("node-fetch");
+
+        var notification_list = [];
+
         var result = await fetch('https://api.orhanaydogdu.com.tr/deprem/live.php?limit=10')
         .then(res => res.json())
         .then(async function(res) {
@@ -163,18 +166,31 @@ class Generic{
                         var dLon = x2.toRad();
 
                         var a = Math.sin(dLat/2) * Math.sin(dLat /2) +
-                                Math.cos(lat1.toRad()) * Math.cos(res.result[j].lat.toRad()) *
+                                Math.cos(lat1.toRad()) * Math.cos(reqBody.latitude.toRad()) *
                                 Math.sin(dLon/2) * Math.sin(dLon/2);
                         var c = 2 * Math.atan(Math.sqrt(a), Math.sqrt(1-a));
                         var d = R * c;
- 
                         if(d < (Math.abs(res.result[j].mag - 4) * 100)) {
-                            //db action
-                            //notification action
+                            knex('home').where({'home_owner': homes[i].home_owner,'home_id': homes[i].home_id}).update("isVisible", true)
+                            .then(async function() {
+                                knex('users').where('user_id', homes[i].home_owner).select("registration_id")
+                                .then((user) => {
+                                    notification_list.push(user.registration_id);
+                                })
+                            });
                         }                
                 }}
-                return;
             });
+        })
+        .then(async function() {
+            var notification = {
+                reg_ids: notification_list,
+                title: "Disaster nearby",
+                message: "Your home opened to public due to a close disaster"
+                };
+            if(notification_list.length > 0){
+                //await Generic.sendNotification(notification).then();
+            }
         }).catch(err => {
             console.log(err)
         });
